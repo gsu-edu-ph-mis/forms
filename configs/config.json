@@ -1,0 +1,77 @@
+{
+  "app": {
+    "title": "Forms",
+    "description": "GSU evaluation forms",
+    "port": "9197",
+    "url": "http://localhost:9197",
+    "dir": "${APP_DIR}",
+    "dirs": {
+      "data": "${APP_DIR}/data",
+      "src": "${APP_DIR}/src",
+      "public": "${APP_DIR}/data/public",
+      "view": "${APP_DIR}/data/view",
+      "upload": "${APP_DIR}/data/upload",
+      "credentials": "${APP_DIR}/credentials"
+    }
+  },
+  "express": {
+    "trustProxy": false
+  },
+  "nunjucks": {
+    "loader": {
+      "watch": true,
+      "noCache": true
+    },
+    "environment": {
+      "autoescape": true,
+      "throwOnUndefined": false,
+      "trimBlocks": false,
+      "lstripBlocks": false
+    }
+  },
+  "session": {
+    "name": "gsu_forms_app_sid",
+    "store": {
+      "db": "sessions.db",
+      "dir": "${APP_DIR}/data"
+    },
+    "cookie": {
+      "httpOnly": false,
+      "maxAge": 2592000,
+      "secure": false
+    }
+  },
+  "sequelize": {
+    "connections": {
+      "session": {
+        "database": "sessions",
+        "dialect": "sqlite",
+        "storage": "${APP_DIR}/data/sessions.db",
+        "logging": false
+      },
+      "main": {
+        "database": "app",
+        "host": "localhost",
+        "dialect": "sqlite",
+        "pool": {
+          "max": 5,
+          "min": 0,
+          "acquire": 30000,
+          "idle": 10000
+        },
+        "operatorsAliases": "false",
+        "storage": "${APP_DIR}/data/app.db",
+        "define": {
+          "freezeTableName": "true",
+          "timestamps": "false",
+          "paranoid": true
+        },
+        "logging": false
+      }
+    }
+  },
+  "recaptchav3": {
+    "enable": true
+  },
+  "loginDelay": 0
+}

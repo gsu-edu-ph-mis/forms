@@ -1,0 +1,12 @@
+{
+  "app": {
+    "url": "https://forms.gsu.edu.ph"
+  },
+  "nunjucks": {
+    "loader": {
+      "watch": false,
+      "noCache": false
+    }
+  },
+  "loginDelay": 5
+}
