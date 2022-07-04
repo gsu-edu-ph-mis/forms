@@ -273,7 +273,7 @@ router.get('/form/preview', async (req, res, next) => {
 });
 router.get('/form/pdf', async (req, res, next) => {
 	try {
-		await pdf.pageToPdf(CONFIG.app.url + '/form/preview', 'out.pdf')
+		await pdf.pageToPdf(CONFIG.app.url + '/form/preview', CONFIG.app.dirs.public + '/out.pdf')
 
 		let data = {
 			
