@@ -1,0 +1,230 @@
+{% extends "document.html" %}
+
+{% block body %}
+<div class="col-md-12">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div class="d-flex align-items-start">
+            <h1 class="h3">Evaluate</h1>
+        </div>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
+                <a href="/form/all" class="btn btn-sm btn-outline-primary">Back</a>
+            </div>
+        </div>
+    </div>
+    <div class="tab-content p-3">
+        <form ref="form" id="vApp" v-cloak v-on:submit.prevent="onSubmit" action="/form/create" method="POST" class="form-default">
+                <h1 class="h1 text-center mb-5">Instrument Instruction/Teaching Effectiveness</h1>
+                <div class="text-center">
+                    <img class="mb-3" src="/images/khristian.delarama.jpg" alt="" style="border-radius: 100%; overflow: hidden;">
+                    <h3 class="h6">Name of Faculty: Prof. Khristian T. de la Rama</h3>
+                </div>
+                {% for letter, q in questionGroups %}
+                    <h2 class="h2">{{letter}}. {{q.title}}</h2>
+                    {% for question in q.questions %}
+                        <div class="form-group row">
+                            {% set qIndex = letter + loop.index %}
+                            <label for="{{qIndex}}" class="col-sm-7 col-form-label">{{loop.index}}. {{question}}</label>
+                            <div class="col-sm-5 align-items-end">
+                                {% for x in [5,4,3,2,1] %}
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="radio" id="{{qIndex}}{{x}}" name="{{qIndex}}" class="custom-control-input">
+                                        <label class="custom-control-label" for="{{qIndex}}{{x}}">{{x}}</label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+                <!--  -->
+
+                <div class="form-group row">
+                    <label for="comments" class="col-sm-6 col-form-label">Aside from the above-mentioned criteria, what are your comments or suggestions?</label>
+                    <div class="col-sm-6">
+                        <textarea name="comments" id="comments" cols="30" rows="10" class="form-control"></textarea>
+                    </div>
+                </div>
+                <h2 class="h2 mb-3">Evaluator Info</h2>
+                <div class="form-group row">
+                    <label for="email" class="col-sm-2 col-form-label">Your Email</label>
+                    <div class="col-sm-10">
+                        <input type="email" class="form-control" id="email">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="name" class="col-sm-2 col-form-label">Your Name</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="name" placeholder="Last Name, First Name, Middle Name">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="course" class="col-sm-2 col-form-label">Your Course</label>
+                    <div class="col-sm-10">
+                        <select name="course" id="course" class="form-control">
+                            <option></option>
+                            <option>BACHELOR OF ELEMENTARY EDUCATION (Major in General Education)</option>
+                            <option>BACHELOR OF SECONDARY EDUCATION (Major in English)</option>
+                            <option>BACHELOR OF SECONDARY EDUCATION (Major in Filipino)</option>
+                            <option>BACHELOR OF SECONDARY EDUCATION (Major in Mathematics)</option>
+                            <option>BACHELOR OF SECONDARY EDUCATION (Major in Science)</option>
+                            <option>BACHELOR OF SECONDARY EDUCATION (Major in Social Studies)</option>
+                            <option>BACHELOR OF TECHNOLOGY AND LIVELIHOOD EDUCATION (Major in Home Economics and Livelihood Education)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="yearLevel" class="col-sm-2 col-form-label">Your Year Level</label>
+                    <div class="col-sm-10">
+                        <select name="yearLevel" id="yearLevel" class="form-control">
+                            <option></option>
+                            <option>First Year</option>
+                            <option>Second Year</option>
+                            <option>Third Year</option>
+                            <option>Fourth Year</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="section" class="col-sm-2 col-form-label">Your Section</label>
+                    <div class="col-sm-10">
+                        <select name="section" id="section" class="form-control">
+                            <option></option>
+                            <option>A</option>
+                            <option>B</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group row">
+                    <label for="name" class="col-sm-2 col-form-label">Your Signature</label>
+                    <div class="col-sm-10">
+                        <div id="signature-pad" style="background: #ccc; padding:5px;">
+                            <div>Use fingertips, mouse or tablet with pen to sign</div>
+                            <div style="background: #fff; margin-bottom: 5px;">
+                                <canvas style="cursor: crosshair; box-sizing:content-box; width: 100%; height: 300px;"></canvas>
+                            </div> 
+                            <div class="form-row">
+                                <div class="col-6">
+                                    <button class="btn btn-link text-danger btn-sm" type="button" data-action="clear">Erase</button>
+                                </div>
+                                <div class="col-6 text-right">
+                                    <button class="btn btn-primary btn-sm btn-full-width" type="button" data-action="save-png">Sign and Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                
+                <!-- <button class="btn btn-primary">Submit</button> -->
+
+                <textarea style="visibility:hidden" name="sign" id="sign" cols="30" rows="10"></textarea>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script src="{{app.url}}/js/signature_pad.min.js"></script>
+<script>
+    
+</script>
+<script>
+    var vApp = new Vue({
+        el: '#vApp',
+        delimiters: ["${", "}"],
+        mixins: [
+            window.vuelidate.validationMixin,
+            window.vuelidateExtendMixin,
+        ],
+       
+        data: {
+            formTitle: '{{formTitle|default("COLLEGE OF TEACHER EDUCATION ONLINE EVALUATION ON TEACHING EFFECTIVENESS", true)}}',
+            ratingPeriod: '{{ratingPeriods[0]}}',
+            ratingPeriodSemester: '',
+            evaluatee: '',
+        },
+        validations: {
+            formTitle: {
+                required: window.validators.required
+            },
+			ratingPeriod: {
+                required: window.validators.required
+            },
+            ratingPeriodSemester: {
+                required: window.validators.required
+            },
+            evaluatee: {
+                required: window.validators.required
+            },
+        },
+        mounted: function(){
+            var wrapper = document.getElementById("signature-pad");
+            var clearButton = wrapper.querySelector("[data-action=clear]");
+            var savePNGButton = wrapper.querySelector("[data-action=save-png]");
+            var canvas = wrapper.querySelector("canvas");
+            var signaturePad = new SignaturePad(canvas, {
+                // It's Necessary to use an opaque color when saving image as JPEG;
+                // this option can be omitted if only saving as PNG or SVG
+                backgroundColor: 'rgba(255, 255, 255, 0)'
+            });
+
+            // Adjust canvas coordinate space taking into account pixel ratio,
+            // to make it look crisp on mobile devices.
+            // This also causes canvas to be cleared.
+            function resizeCanvas() {
+                // When zoomed out to less than 100%, for some very strange reason,
+                // some browsers report devicePixelRatio as less than 1
+                // and only part of the canvas is cleared then.
+                var ratio =  Math.max(window.devicePixelRatio || 1, 1);
+
+                // This part causes the canvas to be cleared
+                canvas.width = canvas.offsetWidth * ratio;
+                canvas.height = canvas.offsetHeight * ratio;
+                canvas.getContext("2d").scale(ratio, ratio);
+
+                // This library does not listen for canvas changes, so after the canvas is automatically
+                // cleared by the browser, SignaturePad#isEmpty might still return false, even though the
+                // canvas looks empty, because the internal data of this library wasn't cleared. To make sure
+                // that the state of this library is consistent with visual state of the canvas, you
+                // have to clear it manually.
+                signaturePad.clear();
+            }
+
+            // On mobile devices it might make more sense to listen to orientation change,
+            // rather than window resize events.
+            window.addEventListener("resize", resizeCanvas);
+            resizeCanvas();
+
+            clearButton.addEventListener("click", function (event) {
+                signaturePad.clear();
+            });
+
+            savePNGButton.addEventListener("click", function (event) {
+                if (signaturePad.isEmpty()) {
+                    alert("Please provide a signature first.");
+                } else {
+                    var dataURL = signaturePad.toDataURL();
+                    document.getElementById('sign').value = dataURL
+                    // document.getElementById('form').submit();
+                }
+            });
+        },
+        methods: {
+            
+            onSubmit: function(){
+                var me = this;
+                me.$v.$touch()
+                if (me.$v.$error) {
+                    alert('Please correct the errors to continue.')
+                } else {
+                    me.$nextTick(function() {
+                        me.$refs.form.submit();
+                    });
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
+

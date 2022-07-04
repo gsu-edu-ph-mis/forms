@@ -20,5 +20,8 @@ module.exports = {
             type: DataTypes.JSON
         },
     },
-    options: { timestamps: true }
+    options: { 
+        timestamps: true,
+        updatedAt: false
+    }
 }

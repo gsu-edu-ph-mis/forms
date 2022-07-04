@@ -9,7 +9,7 @@ const express = require('express');
 let router = express.Router();
 router.use(require('./routes/public'));
 router.use(require('./routes/protected'));
-router.use(require('./routes/forms'));
+router.use(require('./routes/form'));
 // router.use(require('./routes/attendance'));
 // router.use(require('./routes/student'));
 // router.use(require('./routes/room'));

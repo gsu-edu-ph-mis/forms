@@ -49,6 +49,9 @@ env.addFilter('generateArray', function (value, offset = 0) {
 env.addFilter('padStart', function (value, length = 2, pads = '0') {
     return String(value).padStart(length, pads)
 })
+env.addFilter('lowerCase', function (value) {
+    return String(value).toLocaleLowerCase()
+})
 env.addFilter('maybePluralize', function (count, noun, suffix = 's') {
     return`${count} ${noun}${count !== 1 ? suffix : ''}`;
 })

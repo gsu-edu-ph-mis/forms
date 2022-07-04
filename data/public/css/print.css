@@ -1,0 +1,141 @@
+/* See https://stackoverflow.com/questions/49785039/printing-bootstrap-4-html-page-in-chrome-cuts-off-chrome-header-footers */
+@page {
+    size: Legal;
+}
+@media print {
+    html, body {
+        width: 8.5in;
+        height: 14in;
+    }
+}
+
+body {
+    padding: 25px 0;
+    background: none;
+}
+/* Fonts */
+body, pre {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+.font-serif {
+    font-family: "Times New Roman", serif;
+}
+
+img {
+    max-width: 100%;
+}
+
+
+.paper h1 {
+    font-size: 26px;
+}
+
+.paper h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+.paper p {
+    margin-bottom: 10px;
+}
+
+.paper > .row {
+    margin-bottom: 25px;
+}
+.paper .row .row {
+    margin-bottom: 10px;
+}
+
+/* .col-1 > p:first-child,
+.col-2 > p:first-child,
+.col-3 > p:first-child,
+.col-4 > p:first-child,
+.col-5 > p:first-child,
+.col-6 > p:first-child,
+.col-7 > p:first-child,
+.col-8 > p:first-child,
+.col-9 > p:first-child,
+.col-10 > p:first-child,
+.col-11 > p:first-child,
+.col-12 > p:first-child {
+    font-size: 14px;
+} */
+
+.pagebreak { 
+    page-break-before: always;
+    page-break-inside: avoid;
+} /* page-break-after works, as well */
+
+
+.fz-7 {
+    font-size: 7px;
+}
+.fz-8 {
+    font-size: 8px;
+}
+.fz-9 {
+    font-size: 9px;
+}
+.fz-10 {
+    font-size: 10px;
+}
+.fz-12 {
+    font-size: 12px;
+}
+
+.min-w-100 {
+    min-width: 100px;
+}
+.min-w-200 {
+    min-width: 200px;
+}
+.min-w-300 {
+    min-width: 300px;
+}
+.min-w-500 {
+    min-width: 500px;
+}
+
+.underline {
+    border-bottom: 1px solid #111;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    display: inline-block;
+}
+
+.table-bordered td,
+.table-bordered th {
+    border: 1px solid #111 !important;
+    padding: 3px 4px;
+}
+
+.table-doc-code th,
+.table-doc-code td {
+    border: 1px solid #111 !important;
+    padding: 2px 4px;
+}
+.table-doc-code th {
+    background: #111 !important;
+    color: #fff;
+}
+.table-doc-code td {
+    color: #111 !important;
+}
+
+.circled {
+    background: #111;
+}
+.circle {
+    width: 15px;
+    height: 15px;
+    border-radius: 100%;
+    border: 1px solid #111;
+    display: inline-block;
+}
+
+.answered {
+    border: 1px solid #111;
+    border-radius: 100%;
+    display: inline-block;
+    min-width: 20px;
+}

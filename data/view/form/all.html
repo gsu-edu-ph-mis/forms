@@ -6,48 +6,51 @@
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <div class="d-flex align-items-start">
           
-            <h1 class="h2 ml-2">Posts</h1>
+            <h1 class="h2 ml-2">Forms</h1>
         </div>
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
-                <a href="/post/create" class="btn btn-sm btn-outline-primary">Add Post</a>
+                <a href="/form/create" class="btn btn-sm btn-outline-primary">Add Form</a>
             </div>
         </div>
     </div>
     {% include 'parts/flash.html' %}
-    {% if posts.length <= 0 %}
+    {% if forms.length <= 0 %}
         <p>None found.</p>
     {% else %}
-
-        
         <div class="table-responsive">
-            <table class="table table-striped">
+            <table class="table table-sm table-striped">
                 <thead>
                     <tr>
                         <th class="text-center" width="10%"></th>
-                        <th width="70%">
-                            Title
+                        <th width="10%">
+                            Name
                         </th>
                         <th width="15%">
-                            Categories
+                            AY
                         </th>
+                        <th>Sem</th>
+                        <th>Period</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                {% for post in posts %}
+                {% for form in forms %}
                     <tr>
+                        <td>{{form.id}}</td>
+                        <td><a href="/form/view/{{form.id}}">{{form.name}}</a></td>
                         <td>
-                            {{post.date|format_date('MMM DD, YYYY')}}
+                            {{form.academicYear}}
                         </td>
-                        <td><a href="{{post.link}}" target="_blank">{{post.title.rendered}}</a></td>
-                        <td>{{post.categories2|join(',')}}</td>
                         <td>
-                            {% if post.isDeletable %}
-                            <a onclick="return confirm('Delete this post permanently?');" class="text-danger" href="/post/delete/{{post.id}}">X</a>
-                            {% else %}
-                            <span onclick="alert('Cannot delete posts older than {{CONFIG.deleteWindow.value}} {{CONFIG.deleteWindow.unit}}.')">X</span>
-                            {% endif %}
+                            {{form.semester}}
+                        </td>
+                        <td>
+                            {{form.ratingPeriodStart|format_date('MMM DD, YYYY')}} to
+                            {{form.ratingPeriodEnd|format_date('MMM DD, YYYY')}}
+                        </td>
+                        <td>
+                            <a href="/form/update/{{form.id}}">Edit</a> | <a onclick="return confirm('Delete this form permanently?');" class="text-danger" href="/form/delete/{{form.id}}">X</a>
                         </td>
                     </tr>
                     

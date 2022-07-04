@@ -2,22 +2,9 @@
 
 //// External modules
 const session = require('express-session') // Session engine
-const Sequelize = require("sequelize")
-const SequelizeStore = require("connect-session-sequelize")(session.Store)
+const SQLiteStore = require('connect-sqlite3')(session); // Save session to sqlite db
 
-// create database, ensure 'sqlite3' in your package.json
-const sequelize = new Sequelize(
-  CONFIG.sequelize.connections.session.database, 
-  CRED.sequelize.connections.session.username, 
-  CRED.sequelize.connections.session.password, 
-  CONFIG.sequelize.connections.session
-)
-
-const sessionStorage = new SequelizeStore({
-  db: sequelize,
-})
-
-sessionStorage.sync()
+const sessionStorage = new SQLiteStore(CONFIG.session.store)
 
 // Use the session middleware
 // See options in https://github.com/expressjs/session

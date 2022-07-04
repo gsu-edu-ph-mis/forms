@@ -13,6 +13,6 @@ module.exports = {
     },
     options: { 
         timestamps: true,
-        createdAt: false
+        updatedAt: false
     }
 }

@@ -38,5 +38,5 @@ module.exports = {
             type: DataTypes.BOOLEAN
         },
     },
-    options: { timestamps: false }
+    options: { timestamps: true }
 }

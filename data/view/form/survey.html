@@ -1,0 +1,181 @@
+{% extends "document-print.html" %}
+
+{% block body %}
+<div class="col-md-12">
+    <div class="row align-items-end mb-4 text-center">
+        <div class="col-2"><img src="/images/logo-gsc.png" alt="Logo"></div>
+        <div class="col-4">
+            <p class="mb-0">Republic of the Philippines</p>
+            <p class="font-weight-bold mb-0">State Universities and Colleges</p>
+            <p class="font-weight-bold mb-0">GUIMARAS STATE COLLEGE</p>
+            <p class="mb-0">McLain, Buenavista, Guimaras</p>
+        </div>
+        <div class="col-3">
+            <img src="/images/socotec-sm.jpg" alt="">
+        </div>
+        <div class="col-3">
+            <table class="table table-sm table-doc-code font-serif mb-1">
+                <tr class="fz-10">
+                    <th class="text-center">Document Code No.</th>
+                </tr>
+                <tr>
+                    <td>FM-DPM-GSC-EPE-01</td>
+                </tr>
+            </table>
+            <table class="table table-sm table-doc-code font-serif mb-0">
+                <tr class="fz-10">
+                    <th class="text-center">Rev No.</th>
+                    <th>Effective Date</th>
+                    <th>Page No.</th>
+                </tr>
+                <tr class="fz-12">
+                    <td>01</td>
+                    <td>7 May 2018</td>
+                    <td>1 of 1</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="fz-12">
+        <div class="row">
+            <div class="col-12">
+                <h6 class="h6 text-uppercase text-center font-weight-bold">Instrument Instruction/Teaching Effectiveness</h6>
+                <h6 class="h6 text-center font-weight-bold">Rating Period <span class="underline min-w-100"></span> to <span class="underline min-w-100"></span></h6>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="row">
+                    <p class="font-weight-bold col-6 mb-0">Name of Faculty: <span class="underline min-w-200 pl-3">{{evaluatee.prefix}} {{evaluatee.firstName}} {{evaluatee.middleName}} {{evaluatee.lastName}}</span></p>
+                    <p class="font-weight-bold col-6 mb-0">Academic Rank: <span class="underline min-w-200 pl-3"></span></p>
+                </div>
+                <div class="font-weight-bold">Evaluators: </div>
+                <div class="pl-5 d-flex mb-1">
+                    <div class="font-weight-bold align-items-center d-flex mr-5">
+                        <div class="circle mr-1 {% if survey.evaluatorType == 'self' %}circled{% endif %}"></div>
+                        <div>Self</div>
+                    </div>
+                    <div class="font-weight-bold align-items-center d-flex mr-5">
+                        <div class="circle mr-1 {% if survey.evaluatorType == 'peer' %}circled{% endif %}"></div>
+                        <div>Peer</div>
+                    </div>
+                    <div class="font-weight-bold align-items-center d-flex mr-5">
+                        <div class="circle mr-1 {% if survey.evaluatorType == 'self' %}student{% endif %}"></div>
+                        <div>Student</div>
+                    </div>
+                    <div class="font-weight-bold align-items-center d-flex mr-5">
+                        <div class="circle mr-1 {% if survey.evaluatorType == 'supervisor' %}circled{% endif %}"></div>
+                        <div>Supervisor</div>
+                    </div>
+                </div>
+                <p class="font-weight-bold">Instruction: Please evaluate the faculty using the scale below. Encircle your rating.</p>
+                <table class="table table-bordered table-sm mb-2">
+                    <tr>
+                        <th class="text-center">Scale</th>
+                        <th class="text-center">Descriptive</th>
+                        <th class="text-center">Qualitative</th>
+                    </tr>
+                    <tr>
+                        <td class="text-center">5</td>
+                        <td class="text-center">Outstanding</td>
+                        <td>The performance almost always exceeds the job requirements. The faculty is an exceptional model.</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">4</td>
+                        <td class="text-center">Very Satisfactory</td>
+                        <td>The performance meets and often exceeds the job requirements.</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">3</td>
+                        <td class="text-center">Satisfactory</td>
+                        <td>The performance meets the job requirements.</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">2</td>
+                        <td class="text-center">Fair</td>
+                        <td>The performance needs some development to meet job requirements.</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center">1</td>
+                        <td class="text-center">Poor</td>
+                        <td>The facultyfails to meet job requirements.</td>
+                    </tr>
+                </table>
+                {% for letter, group in questionGroups %}
+                    {% set smallLetter = letter|lowerCase %}
+                    <table class="table table-bordered table-sm mb-2">
+                        <tr>
+                            <th>{{letter}}. {{group.title}}</th>
+                            <th colspan="5">Scale</th>
+                        </tr>
+                        {% for question in group.questions %}
+                            {% set questionIndex = loop.index %}
+                            <tr>
+                                <td>
+                                    <p class="mb-0">{{questionIndex}}. {{question}}</p>
+                                </td>
+                                {% for rating in [5,4,3,2,1] %}
+                                <td width="3%" class="text-center">
+                                    {% if rating == survey[smallLetter + questionIndex] %}
+                                        <div class="answered">{{rating}}</div>
+                                    {% else %}
+                                        {{rating}}
+                                    {% endif %}
+                                </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                        <tr>
+                            <td class="text-right font-weight-bold">Total Score</td>
+                            <td colspan="5" class="font-weight-bold">{{scores[letter].total}}</td>
+                        </tr>
+                    </table>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-3"></div>
+            <div class="col-3"></div>
+            <div class="col-3 font-weight-bold">Grand Total <div class="underline min-w-100 fz-12 pl-3 pr-3 text-center">{{scores.total}}</div></div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-5 font-weight-bold">Legend for Formula/Equation:</div>
+            <div class="col-2">ts = Total Score</div>
+            <div class="col-2">hps = Highest Possible Score</div>
+            <div class="col-2">% = Percentage</div>
+        </div>
+        <div class="row">
+            <div class="col-3">Signature of the Evaluator</div>
+            <div class="col-9 position-relative">
+                :<div class="underline min-w-500 ml-1"> <img style="left:0; top: -25px" class="position-absolute" src="{{survey.evaluatorSignature}}" width="150px" alt=""></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3">Name of the Evaluator</div>
+            <div class="col-9">
+                :<div class="underline min-w-500 ml-1">{{survey.evaluatorName}}</div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3">Position of the Evaluator</div>
+            <div class="col-9">
+                :<div class="underline min-w-500 ml-1">{{survey.evaluatorCourse}}</div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3">Date</div>
+            <div class="col-9">
+                :<div class="underline min-w-500 ml-1">{{survey.createdAt|format_date('MMMM DD, YYYY')}} at {{survey.createdAt|format_date('hh:mm A')}}</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script>
+    
+</script>
+{% endblock %}
+

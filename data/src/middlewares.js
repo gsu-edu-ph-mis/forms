@@ -43,8 +43,7 @@ module.exports = {
             // Authenticated user
             let authUserId = lodash.get(req, 'session.authUserId');
             if (authUserId) {
-                
-                res.locals.user = authUserId
+                res.locals.user = await req.app.locals.db.main.User.findOne({ where: { username: authUserId } });
             }
 
             res.locals.acsrf = lodash.get(req, 'session.acsrf');

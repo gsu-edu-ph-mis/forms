@@ -3,11 +3,9 @@ a {
     color: #025aa5;
 }
 body {
-    background: #F1F1F1;
+    background: #f0ebf8;
 }
-body.body-public {
-    background: rgb(233, 217, 250);
-}
+
 body, pre {
     color: #4b4b4b;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -22,12 +20,13 @@ body, pre {
 }
 [v-cloak]:before {
     content:"";
-    background: url("../images/ajax-loader.gif") no-repeat top center;
+    background: #fff url("../images/ajax-loader.gif") no-repeat top center;
     position: absolute;
     left: 0;
     right: 0;
     top: 0;
     bottom: 0;
+    z-index: 999;
 }
 div[data-pending="true"]:before {
     background: #fff;
@@ -229,22 +228,81 @@ div[data-pending="true"]:after {
     width: 100%;
 }
 
-h1 {
+.h1 {
     font-size: 34px;
 }
-h2 {
-    font-size: 24px;
+.h2 {
+    font-size: 28px;
 }
-h3 {
-    font-size: 18px;
+.h3 {
+    font-size: 22px;
 }
-h4, h5, h6 {
+.h4, .h5, .h6 {
     font-size: 16px;
 }
+.h3, .h4, .h5, .h6 {
+    font-weight: bold;
+}
+
 .form-group {
     margin-bottom: 20px;
 }
 
+/*  */
+.evaluatee-selection {
+    text-align: center;
+    padding: 15px;
+    border-radius: 100%;
+    max-width: 230px;
+    font-size: 22px;
+}
+.evaluatee-selection[data-selected="true"] {
+    background: rgb(238,174,202);
+    background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(255,255,255,1) 80%) center;
+}
+.evaluatee-selection[data-selected="true"] .photo {
+    border-color: #FF6600;
+}
+.evaluatee-selection .photo {
+    border-radius: 100%;
+    width: 150px;
+    height: 150px;
+    border: 5px solid #001968;
+    overflow: hidden;;
+}
+.evaluatee-selection.female .photo {
+    border-color: palevioletred;
+}
+
+.evaluatee-selection img {
+    max-width: 100%;
+    height: auto;
+}
+.evaluatee-selection .photo {
+    margin: 0 auto;
+    margin-bottom: 10px;
+}
+.evaluatee-selection .name {
+    font-size: 16px;
+    color: #001968;
+    font-weight: 400;
+}
+
+#carouselForms .carousel-item {
+    display: block;
+    visibility: hidden;
+    z-index: 1;
+}
+#carouselForms .carousel-item.active {
+    display: block;
+    visibility: visible;
+    z-index: 99;
+}
+
+
+
+
+/*  */
 .table th {
     border-top: 1px solid #ddd;
     border-right: 1px solid #ddd;
