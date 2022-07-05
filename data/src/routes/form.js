@@ -10,6 +10,7 @@ const moment = require('moment')
 const middlewares = require('../middlewares');
 const api = require('../api');
 const db = require('../db');
+const passwordMan = require('../password-man');
 
 // Router
 let router = express.Router()
@@ -63,6 +64,7 @@ router.post('/form/create', async (req, res, next) => {
 			semester: req.body.semester,
 			ratingPeriodStart: req.body.ratingPeriodStart,
 			ratingPeriodEnd: req.body.ratingPeriodEnd,
+			uniqueKey: passwordMan.randomString(64),
 			createdBy: user.id,
 		})
 

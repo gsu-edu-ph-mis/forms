@@ -22,8 +22,18 @@ router.get('/', middlewares.requireAuthUser, async (req, res, next) => {
 });
 
 
-router.get('/form/view/:formId', async (req, res, next) => {
+router.get('/survey/:formUniqueKey', async (req, res, next) => {
 	try {
+
+		let form = await req.app.locals.db.main.Form.findOne({ 
+			where: {
+				uniqueKey: req.params.formUniqueKey
+			},
+			raw: true,
+		})
+		if(!form){
+			throw new Error('Not found.')
+		}
 
 		let evaluatees = await req.app.locals.db.main.Evaluatee.findAll({ raw: true })
 
@@ -113,13 +123,14 @@ router.get('/form/view/:formId', async (req, res, next) => {
 			D4: null,
 			D5: null,
 		}
-		answers = lodash.mapValues(answers, a => {
-			return 5
-		})
+		// answers = lodash.mapValues(answers, a => {
+		// 	return 5
+		// })
 		// answers.B2 = null
 		// answers.D5 = null
 		let data = {
 			now: moment(),
+			form: form,
 			questionGroups: questionGroups,
 			ratingPeriods: ratingPeriods,
 			evaluatees: evaluatees,
@@ -131,8 +142,17 @@ router.get('/form/view/:formId', async (req, res, next) => {
 	}
 });
 
-router.post('/form/save', async (req, res, next) => {
+router.post('/survey/:formUniqueKey', async (req, res, next) => {
 	try {
+		let form = await req.app.locals.db.main.Form.findOne({ 
+			where: {
+				uniqueKey: req.params.formUniqueKey
+			},
+			raw: true,
+		})
+		if(!form){
+			throw new Error('Not found.')
+		}
 
 		let base64 = lodash.get(req.body.evaluatorSignature.split(';base64,'), '1', '')
 		if (base64) {

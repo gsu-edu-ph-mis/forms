@@ -22,6 +22,9 @@ module.exports = {
         ratingPeriodEnd: {
             type: DataTypes.DATEONLY // Eg. YYYY-MM-DD
         },
+        uniqueKey: {
+            type: DataTypes.STRING
+        },
         createdBy: {
             type: DataTypes.NUMBER // Author
         },

@@ -38,7 +38,7 @@
                 {% for form in forms %}
                     <tr>
                         <td>{{form.id}}</td>
-                        <td><a href="/form/view/{{form.id}}">{{form.name}}</a></td>
+                        <td>{{form.name}}</td>
                         <td>
                             {{form.academicYear}}
                         </td>
@@ -50,6 +50,7 @@
                             {{form.ratingPeriodEnd|format_date('MMM DD, YYYY')}}
                         </td>
                         <td>
+                            <a href="/survey/{{form.uniqueKey}}">View</a>  | 
                             <a href="/form/update/{{form.id}}">Edit</a> | <a onclick="return confirm('Delete this form permanently?');" class="text-danger" href="/form/delete/{{form.id}}">X</a>
                         </td>
                     </tr>

@@ -3,7 +3,7 @@
 {% block body %}
 <div class="col-md-12 p-3">
     <div id="vApp" v-cloak class="tab-content p-4">
-        <form ref="form" v-on:submit.prevent="onSubmit" action="/form/save" method="POST" class="form-default">
+        <form ref="form" v-on:submit.prevent="onSubmit" action="/survey/{{form.uniqueKey}}" method="POST" class="form-default">
             <h1 class="h2 text-center mb-5">Instrument Instruction/Teaching Effectiveness</h1>
             <div id="carouselForms" data-interval="false" class="carousel slide">
                 <div class="carousel-inner">
@@ -208,8 +208,8 @@
                 </ol> 
                 #}
             </div>
-            <input v-model="evaluatee" type="text" name="evaluatee">
-            <textarea v-model="evaluatorSignature" name="evaluatorSignature" id="evaluatorSignature" style="visibility:visible" cols="30" rows="10"></textarea>
+            <input v-model="evaluatee" type="hidden" name="evaluatee">
+            <textarea v-model="evaluatorSignature" name="evaluatorSignature" id="evaluatorSignature" style="visibility: hidden" cols="30" rows="10"></textarea>
         </form>
     </div>
 </div>
@@ -321,7 +321,8 @@
             // rather than window resize events.
             window.addEventListener("resize", resizeCanvas);
             resizeCanvas();
-            this.goto(2)
+            
+            {# this.goto(2) #}
 
             {# this.evaluatorType = 'self'
             this.evaluatorEmail = 'amarillanico@gmail.com'
