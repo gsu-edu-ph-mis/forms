@@ -248,7 +248,12 @@ router.post('/survey/:formUniqueKey', async (req, res, next) => {
 		let base64 = lodash.get(req.body.evaluatorSignature.split(';base64,'), '1', '')
 		if (base64) {
 			let buffer = Buffer.from(base64, 'base64');
-			buffer = await sharp(buffer).trim().toBuffer()
+			buffer = await sharp(buffer).trim().resize({
+                width: 100,
+                height: 100,
+                fit: 'contain',
+                background: { r: 255, g: 255, b: 255, alpha: 0 }
+            }).toBuffer()
 			base64 = `data:image/png;base64,` + buffer.toString('base64')
 		}
 
