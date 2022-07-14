@@ -13,8 +13,7 @@
         </div>
     </div>
     <div class="tab-content pt-3 pb-2 pl-3 pr-2">
-        <form ref="form" id="vApp" v-cloak v-on:submit.prevent="onSubmit" action="/form/update/{{form.id}}" method="POST" class="form-default">
-            
+        <form ref="form" id="vApp" v-cloak v-on:submit.prevent="onSubmit" action="/form/{{form.id}}/update" method="POST" class="form-default">
             <div class="form-group">
                 <label for="name"><strong>Form Name</strong> <span class="text-danger">*</span></label>
                 <div>
