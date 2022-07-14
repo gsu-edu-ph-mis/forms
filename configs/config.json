@@ -71,7 +71,7 @@
     }
   },
   "recaptchav3": {
-    "enable": true
+    "enable": false
   },
   "loginDelay": 0
 }

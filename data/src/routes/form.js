@@ -8,8 +8,6 @@ const moment = require('moment')
 
 //// Modules
 const middlewares = require('../middlewares');
-const api = require('../api');
-const db = require('../db');
 const passwordMan = require('../password-man');
 
 // Router
@@ -22,6 +20,21 @@ router.get('/form/all', async (req, res, next) => {
 		let forms = await req.app.locals.db.main.Form.findAll({
 			raw: true
 		})
+
+		let promises = forms.map(form => {
+			return req.app.locals.db.main.Survey.count({
+				where: {
+					formId: form.id
+				}
+			})
+		})
+		let results = await Promise.all(promises)
+		forms = forms.map((o, i) => {
+
+			o.surveysCount = results[i]
+			return o
+		})
+
 
 		let data = {
 			flash: flash.get(req, 'form'),
@@ -76,14 +89,14 @@ router.post('/form/create', async (req, res, next) => {
 });
 
 // 
-router.get('/form/update/:formId', async (req, res, next) => {
+router.get('/form/:formId/update', async (req, res, next) => {
 	try {
 		let form = await req.app.locals.db.main.Form.findOne({
 			where: {
 				id: req.params.formId
 			}
 		})
-		if(!form){
+		if (!form) {
 			throw new Error('Not found')
 		}
 		let academicYears = Array.from({ length: 10 }, (_, i) => i)
@@ -103,14 +116,14 @@ router.get('/form/update/:formId', async (req, res, next) => {
 		next(err)
 	}
 });
-router.post('/form/update/:formId', async (req, res, next) => {
+router.post('/form/:formId/update/', async (req, res, next) => {
 	try {
 		let form = await req.app.locals.db.main.Form.findOne({
 			where: {
 				id: req.params.formId
 			}
 		})
-		if(!form){
+		if (!form) {
 			throw new Error('Not found')
 		}
 
@@ -130,14 +143,14 @@ router.post('/form/update/:formId', async (req, res, next) => {
 	}
 });
 
-router.get('/form/delete/:formId', async (req, res, next) => {
+router.get('/form/:formId/delete', async (req, res, next) => {
 	try {
 		let form = await req.app.locals.db.main.Form.findOne({
 			where: {
 				id: req.params.formId
 			}
 		})
-		if(!form){
+		if (!form) {
 			throw new Error('Not found')
 		}
 
@@ -145,6 +158,52 @@ router.get('/form/delete/:formId', async (req, res, next) => {
 
 		flash.ok(req, 'form', `Deleted form ${form.name}.`)
 		res.redirect(`/form/all`)
+	} catch (err) {
+		next(err);
+	}
+})
+
+router.get('/form/:formId/surveys', async (req, res, next) => {
+	try {
+		let form = await req.app.locals.db.main.Form.findOne({
+			where: {
+				id: req.params.formId
+			}
+		})
+		if (!form) {
+			throw new Error('Not found')
+		}
+
+		let surveys = await req.app.locals.db.main.Survey.findAll({
+			where: {
+				formId: form.id
+			}
+		})
+
+		let promises = surveys.map(s => {
+			return req.app.locals.db.main.Evaluatee.findOne({
+				where: {
+					id: s.evaluatee
+				}
+			})
+		})
+		let results = await Promise.all(promises)
+		surveys = surveys.map((s,i) => {
+			s.evaluatee = results[i]
+			s.a = s.a1 + s.a2 + s.a3 + s.a4 + s.a5
+			s.b = s.b1 + s.b2 + s.b3 + s.b4 + s.b5
+			s.c = s.c1 + s.c2 + s.c3 + s.c4 + s.c5
+			s.d = s.d1 + s.d2 + s.d3 + s.d4 + s.d5
+
+			s.score = s.a + s.b + s.c + s.d
+			return s
+		})
+		let data = {
+			form: form,
+			surveys: surveys,
+		}
+		// return res.send(surveys)
+		res.render('form/surveys.html', data)
 	} catch (err) {
 		next(err);
 	}

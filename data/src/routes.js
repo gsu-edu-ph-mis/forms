@@ -10,11 +10,7 @@ let router = express.Router();
 router.use(require('./routes/public'));
 router.use(require('./routes/protected'));
 router.use(require('./routes/form'));
-// router.use(require('./routes/attendance'));
-// router.use(require('./routes/student'));
-// router.use(require('./routes/room'));
-// router.use(require('./routes/scanner'));
-// router.use(require('./routes/auto-complete'));
+router.use(require('./routes/survey'));
 
 // 404 Page
 router.use((req, res) => {

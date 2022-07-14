@@ -1,7 +1,7 @@
 {% extends "document-public.html" %}
 
 {% block body %}
-<div class="col-md-12 p-3">
+<div class="col-md-10 p-3 m-auto">
     <div id="vApp" v-cloak class="tab-content p-4">
         <form ref="form" v-on:submit.prevent="onSubmit" action="/survey/{{form.uniqueKey}}" method="POST" class="form-default">
             <h1 class="h2 text-center mb-5">Instrument Instruction/Teaching Effectiveness</h1>
@@ -11,7 +11,7 @@
                         {# 1 #}
                         <h2 class="h3 text-center mb-2">Select Faculty to Evaluate</h2>
                         <div class="evaluatee-selections row">
-                            <div v-for="evaluatee in evaluatees" class="col-md-3 col-xl-2 text-center">
+                            <div v-for="evaluatee in evaluatees" class="col-6 col-md-4 col-xl-2 text-center">
                                 <div v-bind:data-selected="isSelected(evaluatee)" class="evaluatee-selection m-auto">
                                     <div class="photo">
                                         <a v-on:click="select($event, evaluatee)" href="#"><img v-bind:src="`/images/officials/${evaluatee.photo}`" alt="photo" width="150" height="150" /></a>

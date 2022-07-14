@@ -1,0 +1,88 @@
+{% extends "document.html" %}
+
+{% block body %}
+<div class="col-md-12">
+
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div class="">
+            <h1 class="h4">{{form.name}}</h1>
+            <h2 class="h5">Responses ({{surveys.length}})</h2>
+        </div>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
+                <a href="/form/all" class="btn btn-sm btn-outline-primary">Back</a>
+            </div>
+        </div>
+    </div>
+    {% include 'parts/flash.html' %}
+    {% if surveys.length <= 0 %}
+        <p>None found.</p>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-sm table-striped">
+                <thead>
+                    <tr>
+                        <th class="text-center" width="5%"></th>
+                        <th>Evaluator</th>
+                        <th>
+                            Evaluated
+                        </th>
+                        <th>A</th>
+                        <th>B</th>
+                        <th>C</th>
+                        <th>D</th>
+                        <th>Score</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for survey in surveys %}
+                    <tr>
+                        <td>{{loop.index}}</td>
+                        <td>{{survey.evaluatorName}}</td>
+                        <td>
+                            {{survey.evaluatee.firstName}}
+                            {{survey.evaluatee.middleName}}
+                            {{survey.evaluatee.lastName}}
+                        </td>
+                        <td>
+                            {{survey.a}}
+                        </td>
+                        <td>
+                            {{survey.b}}
+                        </td>
+                        <td>
+                            {{survey.c}}
+                        </td>
+                        <td>
+                            {{survey.d}}
+                        </td>
+                        <td>
+                            {{survey.score}}
+                        </td>
+                        <td>
+                        
+                        <a href="/survey/{{survey.id}}/preview">Preview</a> 
+                        <br>
+                        <a href="/survey/{{survey.id}}/pdf">PDF</a>
+                        
+                        </td>
+                    </tr>
+                    
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+
+            <div class="col-md-6 text-center text-md-left">
+
+            </div>
+            <div class="col-md-6 text-center text-md-right">
+                {% include "parts/pagination.html" %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+

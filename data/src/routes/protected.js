@@ -21,17 +21,20 @@ router.get('/', middlewares.requireAuthUser, async (req, res, next) => {
 	}
 });
 
+router.get('/survey/thank-you', async (req, res, next) => {
+	return res.render('form/thanks.html')
+})
 
 router.get('/survey/:formUniqueKey', async (req, res, next) => {
 	try {
 
-		let form = await req.app.locals.db.main.Form.findOne({ 
+		let form = await req.app.locals.db.main.Form.findOne({
 			where: {
 				uniqueKey: req.params.formUniqueKey
 			},
 			raw: true,
 		})
-		if(!form){
+		if (!form) {
 			throw new Error('Not found.')
 		}
 
@@ -123,9 +126,9 @@ router.get('/survey/:formUniqueKey', async (req, res, next) => {
 			D4: null,
 			D5: null,
 		}
-		// answers = lodash.mapValues(answers, a => {
-		// 	return 5
-		// })
+		answers = lodash.mapValues(answers, a => {
+			return 5
+		})
 		// answers.B2 = null
 		// answers.D5 = null
 		let data = {
@@ -144,13 +147,13 @@ router.get('/survey/:formUniqueKey', async (req, res, next) => {
 
 router.post('/survey/:formUniqueKey', async (req, res, next) => {
 	try {
-		let form = await req.app.locals.db.main.Form.findOne({ 
+		let form = await req.app.locals.db.main.Form.findOne({
 			where: {
 				uniqueKey: req.params.formUniqueKey
 			},
 			raw: true,
 		})
-		if(!form){
+		if (!form) {
 			throw new Error('Not found.')
 		}
 
@@ -194,29 +197,38 @@ router.post('/survey/:formUniqueKey', async (req, res, next) => {
 			d4: req.body.D4,
 			d5: req.body.D5,
 		})
-		return res.send(survey)
+		res.redirect('/survey/thank-you')
 	} catch (err) {
 		next(err)
 	}
 });
 
-router.get('/form/preview', async (req, res, next) => {
+router.get('/survey/:surveyId/preview/:key', async (req, res, next) => {
 	try {
+		if(req.params.key !== CRED.pdf.secret){
+			throw new Error('Invalid key.')
+		}
 		let survey = await req.app.locals.db.main.Survey.findOne({
 			where: {
-				id: 1
+				id: req.params.surveyId
 			},
 			raw: true
 		})
-		let evaluatee = null
-		if (survey) {
-			evaluatee = await req.app.locals.db.main.Evaluatee.findOne({
-				where: {
-					id: survey.evaluatee
-				},
-				raw: true
-			})
+		if (!survey) {
+			throw new Error('Not found.')
 		}
+		let form = await req.app.locals.db.main.Form.findOne({
+			where: {
+				id: survey.formId
+			},
+			raw: true
+		})
+		let evaluatee = await req.app.locals.db.main.Evaluatee.findOne({
+			where: {
+				id: survey.evaluatee
+			},
+			raw: true
+		})
 		let questionGroups = {
 			A: {
 				title: 'Commitment',
@@ -281,6 +293,7 @@ router.get('/form/preview', async (req, res, next) => {
 		scores.total = scores.A.total + scores.B.total + scores.C.total + scores.D.total
 		let data = {
 			survey: survey,
+			form: form,
 			evaluatee: evaluatee,
 			questionGroups: questionGroups,
 			scores: scores
@@ -291,19 +304,7 @@ router.get('/form/preview', async (req, res, next) => {
 		next(err)
 	}
 });
-router.get('/form/pdf', async (req, res, next) => {
-	try {
-		await pdf.pageToPdf(CONFIG.app.url + '/form/preview', CONFIG.app.dirs.public + '/out.pdf')
 
-		let data = {
-			
-		}
-		return res.send('Ok')
-		return res.render('form/survey.html', data)
-	} catch (err) {
-		next(err)
-	}
-});
 
 
 // View s3 object using html page
