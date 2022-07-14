@@ -214,9 +214,9 @@ router.get('/survey/:formUniqueKey', async (req, res, next) => {
 			D4: null,
 			D5: null,
 		}
-		answers = lodash.mapValues(answers, a => {
-			return 5
-		})
+		// answers = lodash.mapValues(answers, a => {
+		// 	return 5
+		// })
 		// answers.B2 = null
 		// answers.D5 = null
 		let data = {
