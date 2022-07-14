@@ -4,12 +4,14 @@
 <div class="col-md-10 p-3 m-auto">
     <div id="vApp" v-cloak class="tab-content p-4">
         <form ref="form" v-on:submit.prevent="onSubmit" action="/survey/{{form.uniqueKey}}" method="POST" class="form-default">
-            <h1 class="h3 text-center mb-5">{{form.name}}</h1>
+            <h1 class="h2 text-center mb-5">{{form.name}}</h1>
             <div id="carouselForms" data-interval="false" class="carousel slide">
                 <div class="carousel-inner">
+                    
                     <div class="carousel-item active">
                         {# 1 #}
-                        <h2 class="h3 text-center mb-2">Select Faculty to Evaluate</h2>
+                        <div class="mb-4" style="white-space: pre-wrap;">{{form.description}}</div>
+                        <h2 class="h3 text-center mb-5">Select a Faculty to Evaluate:</h2>
                         <div class="evaluatee-selections row">
                             <div v-for="evaluatee in evaluatees" class="col-6 col-md-4 col-xl-2 text-center">
                                 <div v-bind:data-selected="isSelected(evaluatee)" class="evaluatee-selection m-auto">
@@ -28,6 +30,7 @@
                         </div>
                         {# 1 #}
                     </div>
+                   
                     <div class="carousel-item">
                         {# 2 #}
                         <h2 class="h4 mb-4">Instruction: Please evaluate ${name} using the scale below.</h2>
@@ -66,21 +69,23 @@
                             </table>
                         </div>
                         {% for letter, q in questionGroups %}
-                            <h2 class="h4 mb-4">{{letter}}. {{q.title}}</h2>
-                            {% for question in q.questions %}
-                                <div class="form-group row">
-                                    {% set qIndex = letter + loop.index %}
-                                    <label for="{{qIndex}}" class="col-md-8">{{loop.index}}. {{question}}</label>
-                                    <div class="col-md-4 align-items-end">
-                                        {% for x in [5,4,3,2,1] %}
-                                            <div class="custom-control custom-radio custom-control-inline">
-                                                <input v-model="answers.{{qIndex}}" type="radio" id="{{qIndex}}{{x}}" name="{{qIndex}}" value="{{x}}" class="custom-control-input">
-                                                <label class="custom-control-label" for="{{qIndex}}{{x}}">{{x}}</label>
-                                            </div>
-                                        {% endfor %}
+                            <div class="mb-5">
+                                <h2 class="h4 mb-4">{{letter}}. {{q.title}}</h2>
+                                {% for question in q.questions %}
+                                    <div class="form-group row">
+                                        {% set qIndex = letter + loop.index %}
+                                        <label for="{{qIndex}}" class="col-md-8">{{loop.index}}. {{question}}</label>
+                                        <div class="col-md-4 align-items-end">
+                                            {% for x in [5,4,3,2,1] %}
+                                                <div class="custom-control custom-radio custom-control-inline">
+                                                    <input v-model="answers.{{qIndex}}" type="radio" id="{{qIndex}}{{x}}" name="{{qIndex}}" value="{{x}}" class="custom-control-input">
+                                                    <label class="custom-control-label" for="{{qIndex}}{{x}}">{{x}}</label>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
                                     </div>
-                                </div>
-                            {% endfor %}
+                                {% endfor %}
+                            </div>
                         {% endfor %}
                         <!--  -->
                         <div class="form-group row">
@@ -126,10 +131,16 @@
                             <div class="col-sm-10">
                                 <input v-model="evaluatorName" name="evaluatorName" id="evaluatorName" type="text" class="form-control" placeholder="Last Name, First Name, Middle Name">
                                 <small class="invalid-feedback">${getError('evaluatorName')}</small>
-
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div v-if="evaluatorType !== 'student'"  class="form-group row">
+                            <label for="evaluatorPosition" class="col-sm-2 col-form-label">My Position</label>
+                            <div class="col-sm-10">
+                                <input v-model="evaluatorPosition" name="evaluatorPosition" id="evaluatorPosition" type="text" class="form-control" placeholder="">
+                                <small class="invalid-feedback">${getError('evaluatorPosition')}</small>
+                            </div>
+                        </div>
+                        <div v-if="evaluatorType === 'student'" class="form-group row">
                             <label for="evaluatorCourse" class="col-sm-2 col-form-label">My Course</label>
                             <div class="col-sm-10">
                                 <select v-model="evaluatorCourse" name="evaluatorCourse" id="evaluatorCourse" class="form-control">
@@ -143,10 +154,9 @@
                                     <option>BACHELOR OF TECHNOLOGY AND LIVELIHOOD EDUCATION (Major in Home Economics and Livelihood Education)</option>
                                 </select>
                                 <small class="invalid-feedback">${getError('evaluatorCourse')}</small>
-
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div v-if="evaluatorType === 'student'" class="form-group row">
                             <label for="evaluatorYearLevel" class="col-sm-2 col-form-label">My Year Level</label>
                             <div class="col-sm-10">
                                 <select v-model="evaluatorYearLevel" name="evaluatorYearLevel" id="evaluatorYearLevel" class="form-control">
@@ -157,10 +167,9 @@
                                     <option>Fourth Year</option>
                                 </select>
                                 <small class="invalid-feedback">${getError('evaluatorYearLevel')}</small>
-
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div v-if="evaluatorType === 'student'" class="form-group row">
                             <label for="evaluatorSection" class="col-sm-2 col-form-label">My Section</label>
                             <div class="col-sm-10">
                                 <select v-model="evaluatorSection" name="evaluatorSection" id="evaluatorSection" class="form-control">
@@ -169,15 +178,13 @@
                                     <option>B</option>
                                 </select>
                                 <small class="invalid-feedback">${getError('evaluatorSection')}</small>
-
                             </div>
                         </div>
-                        
                         <div class="form-group row">
                             <label for="evaluatorSignature" class="col-sm-2 col-form-label">My Signature</label>
                             <div class="col-sm-10">
                                 <div id="signature-pad" style="background: #ccc; padding:5px;">
-                                    <div>Use fingertips, mouse or tablet with pen to sign</div>
+                                    <div>Use fingertips, mouse or tablet pen to sign</div>
                                     <div style="background: #fff; margin-bottom: 5px;">
                                         <canvas style="cursor: crosshair; box-sizing:content-box; width: 100%; height: 300px;"></canvas>
                                     </div> 
@@ -194,19 +201,15 @@
                         </div>
                         <div class="p-3 bg-light d-flex justify-content-between">
                             <button v-on:click="goto(1)" type="button" class=" btn btn-light">&laquo; Back</button>
-                            <button v-on:click="saveSignature" class="btn btn-primary" type="button" id="save-signature">Sign and Submit</button>
+                            <div>
+                                By signing you agree with our <a target="_blank" href="/data-privacy">Data Privacy</a> statement
+                                <button v-on:click="saveSignature" class="btn btn-primary" type="button" id="save-signature">Sign and Submit</button>
+                            </div>
                         </div>
                         
                         {# 3 #}
                     </div>
                 </div>
-                {# 
-                <ol class="carousel-indicators">
-                    <li data-target="#carouselForms" data-slide-to="0" class="active"></li>
-                    <li data-target="#carouselForms" data-slide-to="1"></li>
-                    <li data-target="#carouselForms" data-slide-to="2"></li>
-                </ol> 
-                #}
             </div>
             <input v-model="evaluatee" type="hidden" name="evaluatee">
             <textarea v-model="evaluatorSignature" name="evaluatorSignature" id="evaluatorSignature" style="display:none; visibility: hidden" cols="30" rows="10"></textarea>
@@ -242,6 +245,7 @@
             evaluatorType: '',
             evaluatorEmail: '',
             evaluatorName: '',
+            evaluatorPosition: '',
             evaluatorCourse: '',
             evaluatorYearLevel: '',
             evaluatorSection: '',
@@ -257,14 +261,25 @@
             evaluatorName: {
                 required: window.validators.required
             },
+            evaluatorPosition: {
+                required: window.validators.requiredIf(function(){
+                    return this.evaluatorType !== 'student';
+                })
+            },
             evaluatorCourse: {
-                required: window.validators.required
+                required: window.validators.requiredIf(function(){
+                    return this.evaluatorType === 'student';
+                })
             },
             evaluatorYearLevel: {
-                required: window.validators.required
+                required: window.validators.requiredIf(function(){
+                    return this.evaluatorType === 'student';
+                })
             },
             evaluatorSection: {
-                required: window.validators.required
+                required: window.validators.requiredIf(function(){
+                    return this.evaluatorType === 'student';
+                })
             },
         },
         computed: {
@@ -325,12 +340,13 @@
             window.addEventListener("resize", resizeCanvas);
             resizeCanvas();
             
-            {# this.goto(2) #}
+            this.goto(2)
 
-            {# this.evaluatorType = 'self'
+            this.evaluatee = 1
+            this.evaluatorType = 'self'
             this.evaluatorEmail = 'amarillanico@gmail.com'
             this.evaluatorName = 'Amarilla, Nico, Gayapa'
-            this.evaluatorCourse = 'BACHELOR OF ELEMENTARY EDUCATION (Major in General Education)'
+            {# this.evaluatorCourse = 'BACHELOR OF ELEMENTARY EDUCATION (Major in General Education)'
             this.evaluatorYearLevel = 'First Year'
             this.evaluatorSection = 'A' #}
 

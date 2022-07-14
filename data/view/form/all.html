@@ -50,7 +50,7 @@
                             {{form.ratingPeriodEnd|format_date('MMM DD, YYYY')}}
                         </td>
                         <td>
-                            <a href="/survey/{{form.uniqueKey}}">View</a>  | 
+                            <a target="_blank" href="/survey/{{form.uniqueKey}}">View</a>  | 
                             <a href="/form/{{form.id}}/update">Edit</a> | <a onclick="return confirm('Delete this form permanently?');" class="text-danger" href="/form/{{form.id}}/delete">X</a>
                             <br>
                             <a href="/form/{{form.id}}/surveys">Responses ({{form.surveysCount}})</a>

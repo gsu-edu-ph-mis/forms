@@ -40,14 +40,14 @@
         <div class="row">
             <div class="col-12">
                 <h6 class="h6 text-uppercase text-center font-weight-bold">Instrument Instruction/Teaching Effectiveness</h6>
-                <h6 class="h6 text-center font-weight-bold">Rating Period <span class="underline min-w-100"></span> to <span class="underline min-w-100"></span></h6>
+                <h6 class="h6 text-center font-weight-bold">Rating Period <span class="underline min-w-100">{{form.ratingPeriodStart|format_date('MMMM YYYY')}}</span> to <span class="underline min-w-100">{{form.ratingPeriodEnd|format_date('MMMM YYYY')}}</span></h6>
             </div>
         </div>
         <div class="row">
             <div class="col-12">
                 <div class="row">
                     <p class="font-weight-bold col-6 mb-0">Name of Faculty: <span class="underline min-w-200 pl-3">{{evaluatee.prefix}} {{evaluatee.firstName}} {{evaluatee.middleName}} {{evaluatee.lastName}}</span></p>
-                    <p class="font-weight-bold col-6 mb-0">Academic Rank: <span class="underline min-w-200 pl-3"></span></p>
+                    <p class="font-weight-bold col-6 mb-0">Academic Rank: <span class="underline min-w-200 pl-3">{{evaluatee.position}}</span></p>
                 </div>
                 <div class="font-weight-bold">Evaluators: </div>
                 <div class="pl-5 d-flex mb-1">
@@ -60,7 +60,7 @@
                         <div>Peer</div>
                     </div>
                     <div class="font-weight-bold align-items-center d-flex mr-5">
-                        <div class="circle mr-1 {% if survey.evaluatorType == 'self' %}student{% endif %}"></div>
+                        <div class="circle mr-1 {% if survey.evaluatorType == 'student' %}circled{% endif %}"></div>
                         <div>Student</div>
                     </div>
                     <div class="font-weight-bold align-items-center d-flex mr-5">
@@ -160,7 +160,13 @@
         <div class="row">
             <div class="col-3">Position of the Evaluator</div>
             <div class="col-9">
-                :<div class="underline min-w-500 ml-1">{{survey.evaluatorCourse}}</div>
+                :<div class="underline min-w-500 ml-1">
+                {% if survey.evaluatorType === 'student' %}
+                    {{survey.evaluatorCourse}}
+                {% else %}
+                    {{survey.evaluatorPosition}}
+                {% endif %}
+                </div>
             </div>
         </div>
         <div class="row">

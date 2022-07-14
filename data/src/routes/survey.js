@@ -25,7 +25,7 @@ router.get('/survey/:surveyId/preview', async (req, res, next) => {
 
 router.get('/survey/:surveyId/pdf', async (req, res, next) => {
 	try {
-		let buff = await pdf.pageToPdf(`${CONFIG.app.url}/survey/${req.params.surveyId}/preview/${CRED.pdf.secret}`, CONFIG.app.dirs.public + '/out.pdf')
+		let buff = await pdf.pageToPdf(`${CONFIG.app.url}/survey/${req.params.surveyId}/preview/${CRED.pdf.secret}`)
 
 		res.set('Content-Disposition', `attachment; filename="response.pdf"`)
 		res.set('Content-Type', 'application/pdf')

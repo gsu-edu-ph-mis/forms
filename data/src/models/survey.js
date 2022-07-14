@@ -10,19 +10,9 @@ module.exports = {
         formId: {
             type: DataTypes.NUMBER
         },
-        title: {
-            type: DataTypes.STRING
-        },
-        ratingPeriod: {
-            type: DataTypes.STRING // Eg. 2021-2022
-        },
-        ratingPeriodSemester: {
-            type: DataTypes.NUMBER // 1 or 2 for 1st and 2nd sem
-        },
         evaluatee: {
             type: DataTypes.STRING
         },
-        
         evaluatorType: {
             type: DataTypes.STRING // self, peer, student, supervisor
         },
@@ -30,6 +20,9 @@ module.exports = {
             type: DataTypes.STRING
         },
         evaluatorEmail: {
+            type: DataTypes.STRING
+        },
+        evaluatorPosition: {
             type: DataTypes.STRING
         },
         evaluatorCourse: {

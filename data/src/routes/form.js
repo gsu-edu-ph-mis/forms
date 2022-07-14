@@ -73,6 +73,7 @@ router.post('/form/create', async (req, res, next) => {
 
 		let form = await req.app.locals.db.main.Form.create({
 			name: req.body.name,
+			description: req.body.description,
 			academicYear: req.body.academicYear,
 			semester: req.body.semester,
 			ratingPeriodStart: req.body.ratingPeriodStart,
