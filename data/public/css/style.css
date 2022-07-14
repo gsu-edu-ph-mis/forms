@@ -266,7 +266,8 @@ div[data-pending="true"]:after {
 .evaluatee-selection .photo {
     border-radius: 100%;
     width: 150px;
-    height: 150px;
+    max-width: 100%;
+    height: auto;
     border: 5px solid #001968;
     overflow: hidden;;
 }
@@ -292,12 +293,15 @@ div[data-pending="true"]:after {
     display: block;
     visibility: hidden;
     z-index: 1;
+    height: 1px;
 }
 #carouselForms .carousel-item.active {
     display: block;
     visibility: visible;
     z-index: 99;
+    height: auto;
 }
+
 
 
 

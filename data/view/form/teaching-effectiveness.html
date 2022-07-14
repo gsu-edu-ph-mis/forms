@@ -4,7 +4,7 @@
 <div class="col-md-10 p-3 m-auto">
     <div id="vApp" v-cloak class="tab-content p-4">
         <form ref="form" v-on:submit.prevent="onSubmit" action="/survey/{{form.uniqueKey}}" method="POST" class="form-default">
-            <h1 class="h2 text-center mb-5">Instrument Instruction/Teaching Effectiveness</h1>
+            <h1 class="h3 text-center mb-5">{{form.name}}</h1>
             <div id="carouselForms" data-interval="false" class="carousel slide">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
@@ -209,7 +209,7 @@
                 #}
             </div>
             <input v-model="evaluatee" type="hidden" name="evaluatee">
-            <textarea v-model="evaluatorSignature" name="evaluatorSignature" id="evaluatorSignature" style="visibility: hidden" cols="30" rows="10"></textarea>
+            <textarea v-model="evaluatorSignature" name="evaluatorSignature" id="evaluatorSignature" style="display:none; visibility: hidden" cols="30" rows="10"></textarea>
         </form>
     </div>
 </div>
@@ -279,6 +279,9 @@
                 return ""
             },
             btnEvaluate: function(){
+                if(!this.evaluatee){
+                    return "Please select one..."
+                }
                 return "Evaluate " + this.name
             },
             isDisabled: function(){
