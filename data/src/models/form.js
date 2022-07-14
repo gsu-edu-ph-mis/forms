@@ -10,6 +10,9 @@ module.exports = {
         name: {
             type: DataTypes.STRING
         },
+        description: {
+            type: DataTypes.STRING
+        },
         academicYear: {
             type: DataTypes.STRING // Eg. 2021-2022
         },
