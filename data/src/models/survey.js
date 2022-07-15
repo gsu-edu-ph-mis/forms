@@ -25,6 +25,9 @@ module.exports = {
         evaluatorPosition: {
             type: DataTypes.STRING
         },
+        evaluatorSubject: {
+            type: DataTypes.STRING
+        },
         evaluatorCourse: {
             type: DataTypes.STRING
         },

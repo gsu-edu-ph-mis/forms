@@ -104,8 +104,8 @@
                         {# 3 #}
                         <h2 class="h2 mb-3">Evaluator</h2>
                         <div class="form-group row">
-                            <label for="evaluatorType" class="col-sm-2 col-form-label">I am evaluating:</label>
-                            <div class="col-sm-10">
+                            <label for="evaluatorType" class="col-sm-3 col-form-label">I am evaluating:</label>
+                            <div class="col-sm-9">
                                 <select v-model="evaluatorType" name="evaluatorType" id="evaluatorType" class="form-control">
                                     <option></option>
                                     <option value="self">My Self</option>
@@ -114,35 +114,42 @@
                                     <option value="supervisor">As the Supervisor</option>
                                 </select>
                                 <small class="invalid-feedback">${getError('evaluatorType')}</small>
-
                             </div>
                         </div>
-                       
                         <div class="form-group row">
-                            <label for="evaluatorEmail" class="col-sm-2 col-form-label">My Email</label>
-                            <div class="col-sm-10">
+                            <label for="evaluatorEmail" class="col-sm-3 col-form-label">My Email</label>
+                            <div class="col-sm-9">
                                 <input v-model="evaluatorEmail" name="evaluatorEmail" id="evaluatorEmail" type="email" class="form-control">
                                 <small class="invalid-feedback">${getError('evaluatorEmail')}</small>
-
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="evaluatorName" class="col-sm-2 col-form-label">My Name</label>
-                            <div class="col-sm-10">
+                            <label for="evaluatorName" class="col-sm-3 col-form-label">My Name</label>
+                            <div class="col-sm-9">
                                 <input v-model="evaluatorName" name="evaluatorName" id="evaluatorName" type="text" class="form-control" placeholder="Last Name, First Name, Middle Name">
                                 <small class="invalid-feedback">${getError('evaluatorName')}</small>
                             </div>
                         </div>
+                        <div v-if="evaluatorType === 'student'"  class="form-group row">
+                            <div class="col-sm-3 col-form-label">
+                                <label for="evaluatorSubject" class="mb-0">My Subject</label> <br>
+                                <small>(under ${name})</small>
+                            </div>
+                            <div class="col-sm-9">
+                                <input v-model="evaluatorSubject" name="evaluatorSubject" id="evaluatorSubject" type="text" class="form-control" placeholder="">
+                                <small class="invalid-feedback">${getError('evaluatorSubject')}</small>
+                            </div>
+                        </div>
                         <div v-if="evaluatorType !== 'student'"  class="form-group row">
-                            <label for="evaluatorPosition" class="col-sm-2 col-form-label">My Position</label>
-                            <div class="col-sm-10">
+                            <label for="evaluatorPosition" class="col-sm-3 col-form-label">My Position</label>
+                            <div class="col-sm-9">
                                 <input v-model="evaluatorPosition" name="evaluatorPosition" id="evaluatorPosition" type="text" class="form-control" placeholder="">
                                 <small class="invalid-feedback">${getError('evaluatorPosition')}</small>
                             </div>
                         </div>
                         <div v-if="evaluatorType === 'student'" class="form-group row">
-                            <label for="evaluatorCourse" class="col-sm-2 col-form-label">My Course</label>
-                            <div class="col-sm-10">
+                            <label for="evaluatorCourse" class="col-sm-3 col-form-label">My Course</label>
+                            <div class="col-sm-9">
                                 <select v-model="evaluatorCourse" name="evaluatorCourse" id="evaluatorCourse" class="form-control">
                                     <option></option>
                                     <option>BACHELOR OF ELEMENTARY EDUCATION (Major in General Education)</option>
@@ -157,8 +164,8 @@
                             </div>
                         </div>
                         <div v-if="evaluatorType === 'student'" class="form-group row">
-                            <label for="evaluatorYearLevel" class="col-sm-2 col-form-label">My Year Level</label>
-                            <div class="col-sm-10">
+                            <label for="evaluatorYearLevel" class="col-sm-3 col-form-label">My Year Level</label>
+                            <div class="col-sm-9">
                                 <select v-model="evaluatorYearLevel" name="evaluatorYearLevel" id="evaluatorYearLevel" class="form-control">
                                     <option></option>
                                     <option>First Year</option>
@@ -170,8 +177,8 @@
                             </div>
                         </div>
                         <div v-if="evaluatorType === 'student'" class="form-group row">
-                            <label for="evaluatorSection" class="col-sm-2 col-form-label">My Section</label>
-                            <div class="col-sm-10">
+                            <label for="evaluatorSection" class="col-sm-3 col-form-label">My Section</label>
+                            <div class="col-sm-9">
                                 <select v-model="evaluatorSection" name="evaluatorSection" id="evaluatorSection" class="form-control">
                                     <option></option>
                                     <option>A</option>
@@ -181,8 +188,8 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="evaluatorSignature" class="col-sm-2 col-form-label">My Signature</label>
-                            <div class="col-sm-10">
+                            <label for="evaluatorSignature" class="col-sm-3 col-form-label">My Signature</label>
+                            <div class="col-sm-9">
                                 <div id="signature-pad" style="background: #ccc; padding:5px;">
                                     <div>Use fingertips, mouse or tablet pen to sign</div>
                                     <div style="background: #fff; margin-bottom: 5px;">
@@ -199,11 +206,17 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="p-3 bg-light d-flex justify-content-between">
-                            <button v-on:click="goto(1)" type="button" class=" btn btn-light">&laquo; Back</button>
-                            <div>
-                                By signing you agree with our <a target="_blank" href="/data-privacy">Data Privacy</a> statement
-                                <button v-on:click="saveSignature" class="btn btn-primary" type="button" id="save-signature">Sign and Submit</button>
+                        <div class="p-3 bg-light row">
+                            <div class="col-3 col-md-6">
+                                <button v-on:click="goto(1)" type="button" class=" btn btn-light">&laquo; Back</button>
+                            </div>
+                            <div class="col-9 col-md-6">
+                                <div class="d-flex align-items-center justify-content-end">
+                                    <div class="mr-3">By signing you agree with our <a target="_blank" href="/data-privacy">Data Privacy</a> statement</div>
+                                    <div>
+                                        <button v-on:click="saveSignature" class="btn btn-primary" type="button" id="save-signature">Sign and Submit</button>
+                                    </div> 
+                                </div> 
                             </div>
                         </div>
                         
@@ -246,6 +259,7 @@
             evaluatorEmail: '',
             evaluatorName: '',
             evaluatorPosition: '',
+            evaluatorSubject: '',
             evaluatorCourse: '',
             evaluatorYearLevel: '',
             evaluatorSection: '',
@@ -264,6 +278,11 @@
             evaluatorPosition: {
                 required: window.validators.requiredIf(function(){
                     return this.evaluatorType !== 'student';
+                })
+            },
+            evaluatorSubject: {
+                required: window.validators.requiredIf(function(){
+                    return this.evaluatorType === 'student';
                 })
             },
             evaluatorCourse: {
@@ -340,7 +359,7 @@
             window.addEventListener("resize", resizeCanvas);
             resizeCanvas();
             
-            {# this.goto(2)
+            this.goto(2)
 
             this.evaluatee = 1
             this.evaluatorType = 'self'
@@ -348,7 +367,7 @@
             this.evaluatorName = 'Amarilla, Nico, Gayapa'
             this.evaluatorCourse = 'BACHELOR OF ELEMENTARY EDUCATION (Major in General Education)'
             this.evaluatorYearLevel = 'First Year'
-            this.evaluatorSection = 'A' #}
+            this.evaluatorSection = 'A'
 
         },
         watch: {
