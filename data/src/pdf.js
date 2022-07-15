@@ -5,18 +5,14 @@ let pageToPdf = async (url, filePath) => {
     const browser = await puppeteer.launch({args: ['--no-sandbox']})
     const page = await browser.newPage()
     await page.goto(url, { waitUntil: 'networkidle0' })
-    const b = await page.pdf({ 
+    const buff = await page.pdf({ 
         path: filePath, 
-        // format: 'Legal', 
         printBackground: true,
-        // margin: {
-        //     top: 0
-        // }
         preferCSSPageSize : true,
-    });
+    })
 
     await browser.close()
-    return b
+    return buff
 }
 
 let stringToPdf = async (string, filePath) => {
