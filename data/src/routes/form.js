@@ -53,11 +53,11 @@ router.get('/form/create', async (req, res, next) => {
 
 		let academicYears = Array.from({ length: 10 }, (_, i) => i)
 		academicYears = academicYears.map((o) => {
-			let start = moment().year()
+			let start = moment().year() + 2
 			return `${start - 10 + o}-${start - 10 + o + 1}`
 		})
 		academicYears.reverse()
-		// return res.send(academicYears)
+		return res.send(academicYears)
 		let data = {
 			now: moment(),
 			academicYears: academicYears
@@ -102,7 +102,7 @@ router.get('/form/:formId/update', async (req, res, next) => {
 		}
 		let academicYears = Array.from({ length: 10 }, (_, i) => i)
 		academicYears = academicYears.map((o) => {
-			let start = moment().year()
+			let start = moment().year() + 2
 			return `${start - 10 + o}-${start - 10 + o + 1}`
 		})
 		academicYears.reverse()
@@ -189,7 +189,7 @@ router.get('/form/:formId/surveys', async (req, res, next) => {
 			})
 		})
 		let results = await Promise.all(promises)
-		surveys = surveys.map((s,i) => {
+		surveys = surveys.map((s, i) => {
 			s.evaluatee = results[i]
 			s.a = s.a1 + s.a2 + s.a3 + s.a4 + s.a5
 			s.b = s.b1 + s.b2 + s.b3 + s.b4 + s.b5
