@@ -5,8 +5,8 @@ const { DataTypes } = require('sequelize');
 
 //// Modules
 
-module.exports = {
-    attributes: {
+module.exports = (modelName, sequelize) => {
+    return sequelize.define(modelName, {
         name: {
             type: DataTypes.STRING
         },
@@ -31,6 +31,8 @@ module.exports = {
         createdBy: {
             type: DataTypes.NUMBER // Author
         },
-    },
-    options: { timestamps: true }
+    }, {
+        // Other model options go here
+        timestamps: true
+    })
 }

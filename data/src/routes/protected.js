@@ -24,7 +24,7 @@ router.get('/survey/:surveyId/preview/:key', async (req, res, next) => {
 		if(req.params.key !== CRED.pdf.secret){
 			throw new Error('Invalid key.')
 		}
-		let survey = await req.app.locals.db.main.Survey.findOne({
+		let survey = await req.app.locals.db.models.Survey.findOne({
 			where: {
 				id: req.params.surveyId
 			},
@@ -33,13 +33,13 @@ router.get('/survey/:surveyId/preview/:key', async (req, res, next) => {
 		if (!survey) {
 			throw new Error('Not found.')
 		}
-		let form = await req.app.locals.db.main.Form.findOne({
+		let form = await req.app.locals.db.models.Form.findOne({
 			where: {
 				id: survey.formId
 			},
 			raw: true
 		})
-		let evaluatee = await req.app.locals.db.main.Evaluatee.findOne({
+		let evaluatee = await req.app.locals.db.models.Evaluatee.findOne({
 			where: {
 				id: survey.evaluatee
 			},

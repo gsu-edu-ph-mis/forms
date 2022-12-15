@@ -35,18 +35,16 @@ const credLoader = new pigura.ConfigLoader({
 })
 global.CRED = credLoader.getConfig()
 
+const dbConn = require('../data/src/db-connect');
 let adminsList = require('./install-data/users-list'); // Do not remove semi-colon
 
 
 ; (async () => {
+    let dbInstance = await dbConn.connect()
+
     try {
-        let db = await require('../data/src/db').connect()
-
-        console.log('Clearing users...')
-        await db.main.User.destroy({
-            truncate: true
-        });
-
+        let User = require('../data/src/models/user')('User', dbInstance)
+        await User.sync()
 
         let logs = []
         let csvRows = ['"username", "password"']
@@ -54,8 +52,7 @@ let adminsList = require('./install-data/users-list'); // Do not remove semi-col
             let password = passwordMan.randomString(10)
             let salt = passwordMan.randomString(16)
             let passwordHash = passwordMan.hashPassword(password, salt)
-
-            let user = db.main.User.build({
+            let user = User.build({
                 passwordHash: passwordHash,
                 salt: salt,
                 roles: o.roles,
@@ -82,10 +79,9 @@ let adminsList = require('./install-data/users-list'); // Do not remove semi-col
         fs.writeFileSync(logFile, csvRows.join("\n"), { encoding: 'utf8' })
         console.log(`Inserted ${promises.length} user(s). See "${logFile}"`)
 
-        await db.sequelize.close()
     } catch (err) {
-        console.error('Error', err)
+        console.error(err)
+    } finally {
+        dbInstance.close();
     }
 })()
-
-

@@ -1,34 +1,39 @@
 (async () => {
 
     //// Core modules
+    const http = require('http')
 
     //// External modules
     const express = require('express')
     const bodyParser = require('body-parser')
     const cookieParser = require('cookie-parser')
-    const lodash = require('lodash')
+    const moment = require('moment')
 
     //// Modules
+    const db = require('./db-connect')
     const errors = require('./errors')
-    const middlewares = require('./middlewares')
     const nunjucksEnv = require('./nunjucks-env')
     const routes = require('./routes')
     const session = require('./session')
-    const db = require('./db')
+    const middlewares = require('./middlewares')
 
 
     //// Create app
     const app = express()
 
-    //// Server and socket.io
-    const httpServer = app
-
+    //// Server
+    const httpServer = http.createServer(app)
 
     //// Setup view
     nunjucksEnv.express(app)
 
     // Connect to db and save
-    app.locals.db = await db.connect()
+    const dbInstance = await db.connect()
+    const dbModels = await db.attachModels(dbInstance)
+    app.locals.db = {
+        instance: dbInstance,
+        models: dbModels,
+    }
 
     // Remove express
     app.set('x-powered-by', false);
@@ -38,7 +43,7 @@
     app.use(middlewares.once);
 
     // Session middleware
-    app.use(session);
+    app.use(session(app.locals.db.instance));
 
     // Static public files
     app.use(express.static(CONFIG.app.dirs.public));
@@ -60,7 +65,6 @@
 
     //// Assign view variables per request
     app.use(middlewares.perRequest);
-
 
     //// Routes
     app.use(routes);
@@ -87,9 +91,8 @@
                 console.log(publicMessage)
             }
             console.error(error)
-            return res.send(publicMessage)
+            return res.send(error.message)
         }
-
 
         next(error)
     });
@@ -103,13 +106,15 @@
                 console.error(err);
             });
 
+            if (error.type === 'flash') {
+                if (error.redirect) {
+                    return res.status(400).redirect(error.redirect)
+                }
+            }
+
             error = errors.normalizeError(error);
             console.error(req.originalUrl)
             console.error(error)
-
-            if (/^\/register\//.test(req.originalUrl)) {
-                return res.status(500).render('error-public.html', { error: error.message });
-            }
 
             // Anything that is not catched
             res.status(500).render('error.html', { error: error.message });
@@ -124,8 +129,7 @@
 
     // Finally the server
     httpServer.listen(CONFIG.app.port, function () {
-        console.log(`App running in "${ENV}" mode at "${CONFIG.app.url}"`);
+        console.log(`${moment().format('YYYY-MMM-DD hh:mm:ss A')}: App running in "${ENV}" mode at "${CONFIG.app.url}"`);
     });
     httpServer.keepAliveTimeout = 60000 * 2;
-
 })()

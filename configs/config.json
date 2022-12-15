@@ -42,33 +42,23 @@
     }
   },
   "sequelize": {
-    "connections": {
-      "session": {
-        "database": "sessions",
-        "dialect": "sqlite",
-        "storage": "${APP_DIR}/data/sessions.db",
-        "logging": false
-      },
-      "main": {
-        "database": "app",
-        "host": "localhost",
-        "dialect": "sqlite",
-        "pool": {
-          "max": 5,
-          "min": 0,
-          "acquire": 30000,
-          "idle": 10000
-        },
-        "operatorsAliases": "false",
-        "storage": "${APP_DIR}/data/app.db",
-        "define": {
-          "freezeTableName": "true",
-          "timestamps": "false",
-          "paranoid": true
-        },
-        "logging": false
-      }
-    }
+    "database": "app",
+    "host": "localhost",
+    "dialect": "sqlite",
+    "pool": {
+      "max": 5,
+      "min": 0,
+      "acquire": 30000,
+      "idle": 10000
+    },
+    "operatorsAliases": "false",
+    "storage": "${APP_DIR}/data/app.db",
+    "define": {
+      "freezeTableName": "true",
+      "timestamps": "false",
+      "paranoid": true
+    },
+    "logging": false
   },
   "recaptchav3": {
     "enable": false

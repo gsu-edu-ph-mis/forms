@@ -17,12 +17,12 @@ router.use('/form', middlewares.requireAuthUser)
 
 router.get('/form/all', async (req, res, next) => {
 	try {
-		let forms = await req.app.locals.db.main.Form.findAll({
+		let forms = await req.app.locals.db.models.Form.findAll({
 			raw: true
 		})
 
 		let promises = forms.map(form => {
-			return req.app.locals.db.main.Survey.count({
+			return req.app.locals.db.models.Survey.count({
 				where: {
 					formId: form.id
 				}
@@ -71,7 +71,7 @@ router.post('/form/create', async (req, res, next) => {
 	try {
 		let user = res.user
 
-		let form = await req.app.locals.db.main.Form.create({
+		let form = await req.app.locals.db.models.Form.create({
 			name: req.body.name,
 			description: req.body.description,
 			academicYear: req.body.academicYear,
@@ -92,7 +92,7 @@ router.post('/form/create', async (req, res, next) => {
 // 
 router.get('/form/:formId/update', async (req, res, next) => {
 	try {
-		let form = await req.app.locals.db.main.Form.findOne({
+		let form = await req.app.locals.db.models.Form.findOne({
 			where: {
 				id: req.params.formId
 			}
@@ -119,7 +119,7 @@ router.get('/form/:formId/update', async (req, res, next) => {
 });
 router.post('/form/:formId/update/', async (req, res, next) => {
 	try {
-		let form = await req.app.locals.db.main.Form.findOne({
+		let form = await req.app.locals.db.models.Form.findOne({
 			where: {
 				id: req.params.formId
 			}
@@ -146,7 +146,7 @@ router.post('/form/:formId/update/', async (req, res, next) => {
 
 router.get('/form/:formId/delete', async (req, res, next) => {
 	try {
-		let form = await req.app.locals.db.main.Form.findOne({
+		let form = await req.app.locals.db.models.Form.findOne({
 			where: {
 				id: req.params.formId
 			}
@@ -166,7 +166,7 @@ router.get('/form/:formId/delete', async (req, res, next) => {
 
 router.get('/form/:formId/surveys', async (req, res, next) => {
 	try {
-		let form = await req.app.locals.db.main.Form.findOne({
+		let form = await req.app.locals.db.models.Form.findOne({
 			where: {
 				id: req.params.formId
 			}
@@ -175,14 +175,14 @@ router.get('/form/:formId/surveys', async (req, res, next) => {
 			throw new Error('Not found')
 		}
 
-		let surveys = await req.app.locals.db.main.Survey.findAll({
+		let surveys = await req.app.locals.db.models.Survey.findAll({
 			where: {
 				formId: form.id
 			}
 		})
 
 		let promises = surveys.map(s => {
-			return req.app.locals.db.main.Evaluatee.findOne({
+			return req.app.locals.db.models.Evaluatee.findOne({
 				where: {
 					id: s.evaluatee
 				}

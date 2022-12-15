@@ -3,12 +3,11 @@
 //// Core modules
 
 //// External modules
-const { DataTypes } = require('sequelize');
+const { DataTypes } = require('sequelize')
 
 //// Modules
-
-module.exports = {
-    attributes: {
+module.exports = (modelName, sequelize) => {
+    return sequelize.define(modelName, {
         prefix:  {
             type: DataTypes.STRING
         },
@@ -33,6 +32,8 @@ module.exports = {
         birthDate: {
             type: DataTypes.STRING
         },
-    },
-    options: { timestamps: true }
+    }, {
+        // Other model options go here
+        timestamps: true
+    })
 }

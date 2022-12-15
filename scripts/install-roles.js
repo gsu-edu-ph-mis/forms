@@ -14,7 +14,7 @@ const pigura = require('pigura');
 
 //// First things first
 //// Save full path of our root app directory and load config and credentials
-global.APP_DIR = path.resolve(__dirname + '/../').replace(/\\/g, '/'); // Turn back slash to slash for cross-platform compat
+global.APP_DIR = path.resolve(__dirname+'/../').replace(/\\/g, '/'); // Turn back slash to slash for cross-platform compat
 global.ENV = lodash.get(process, 'env.NODE_ENV', 'dev')
 
 const configLoader = new pigura.ConfigLoader({
@@ -33,19 +33,22 @@ const credLoader = new pigura.ConfigLoader({
 })
 global.CRED = credLoader.getConfig()
 
+const dbConn = require('../data/src/db-connect');
 let rolesList = require('./install-data/roles-list'); // Do not remove semi-colon
 
 
-(async () => {
+(async ()=>{
+    let dbInstance = await dbConn.connect()
+
     try {
-        let db = await require('../data/src/db').connect()
+        let Role = require('../data/src/models/role')('Role', dbInstance)
+        await Role.drop()
+        await Role.sync()
 
         console.log('Clearing roles collection...')
-        await db.main.Role.destroy({
-            truncate: true
-        });
-        let promises = lodash.map(rolesList, (o) => {
-            let role = db.main.Role.build({
+
+        let promises = lodash.map(rolesList, (o)=>{
+            let role = Role.build({
                 key: o.key,
                 name: o.name,
                 description: lodash.get(o, 'description', ''),
@@ -57,9 +60,11 @@ let rolesList = require('./install-data/roles-list'); // Do not remove semi-colo
         await Promise.all(promises)
         console.log(`Inserted ${promises.length} roles.`)
 
-        await db.sequelize.close()
     } catch (err) {
-        console.error('Error', err)
+        console.error(err)
+        console.log('Rolling back roles collection...')
+    } finally {
+        dbInstance.close();
     }
 })()
 

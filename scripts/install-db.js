@@ -1,8 +1,8 @@
 /**
- * Clear permissions collection and insert permissions
- * Usage: node scripts/install-permissions.js
+ * Usage: node scripts/install-db.js
  */
 //// Core modules
+const fs = require('fs');
 const path = require('path');
 
 //// External modules
@@ -10,6 +10,7 @@ const lodash = require('lodash');
 const pigura = require('pigura');
 
 //// Modules
+const passwordMan = require('../data/src/password-man');
 
 
 //// First things first
@@ -34,37 +35,21 @@ const credLoader = new pigura.ConfigLoader({
 global.CRED = credLoader.getConfig()
 
 const dbConn = require('../data/src/db-connect');
-let permissionList = require('./install-data/permissions-list'); // Do not remove semi-colon
 
-(async () => {
+
+; (async () => {
     let dbInstance = await dbConn.connect()
-    let Permission = require('../data/src/models/permission')('Permission', dbInstance)
 
     try {
-        await Permission.drop()
-        await Permission.sync()
-        
-        console.log('Clearing permissions ...')
-
-        let promises = lodash.map(permissionList, (p) => {
-            let permission = Permission.build({
-                key: p,
-            });
-            console.log(`Inserting "${p}" ...`)
-            return permission.save()
-        })
-        await Promise.all(promises)
-        console.log(`Inserted ${promises.length} permissions.`)
-
+        const dbModels = dbConn.attachModels(dbInstance)
+        if(ENV==='dev'){
+            // Sync all defined models to the DB.
+            await dbInstance.sync({ force: true })
+            console.log('Sync all defined models to the DB.')
+        }
     } catch (err) {
-        console.error(err)
-        console.log('Rolling back permissions collection...')
-        await Permission.destroy({
-            truncate: true
-        });
+        console.log(err)
     } finally {
         dbInstance.close();
     }
 })()
-
-

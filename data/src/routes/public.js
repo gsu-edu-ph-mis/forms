@@ -64,7 +64,7 @@ router.post('/login', async (req, res, next) => {
             }
         }
 
-        let user = await req.app.locals.db.main.User.findOne({ where: { username: username } });
+        let user = await req.app.locals.db.models.User.findOne({ where: { username: username } });
         if (!user) {
             throw new Error(`Incorrect username.`)
         }
@@ -116,7 +116,7 @@ router.get('/survey/thank-you', async (req, res, next) => {
 router.get('/survey/:formUniqueKey', async (req, res, next) => {
 	try {
 
-		let form = await req.app.locals.db.main.Form.findOne({
+		let form = await req.app.locals.db.models.Form.findOne({
 			where: {
 				uniqueKey: req.params.formUniqueKey
 			},
@@ -126,7 +126,7 @@ router.get('/survey/:formUniqueKey', async (req, res, next) => {
 			throw new Error('Not found.')
 		}
 
-		let evaluatees = await req.app.locals.db.main.Evaluatee.findAll({ raw: true })
+		let evaluatees = await req.app.locals.db.models.Evaluatee.findAll({ raw: true })
 
 		let ratingPeriods = Array.from({ length: 10 }, (_, i) => i)
 		ratingPeriods = ratingPeriods.map((o) => {
@@ -214,9 +214,9 @@ router.get('/survey/:formUniqueKey', async (req, res, next) => {
 			D4: null,
 			D5: null,
 		}
-		answers = lodash.mapValues(answers, a => {
-			return 5
-		})
+		// answers = lodash.mapValues(answers, a => {
+		// 	return 5
+		// })
 		// answers.B2 = null
 		// answers.D5 = null
 		let data = {
@@ -235,7 +235,7 @@ router.get('/survey/:formUniqueKey', async (req, res, next) => {
 
 router.post('/survey/:formUniqueKey', async (req, res, next) => {
 	try {
-		let form = await req.app.locals.db.main.Form.findOne({
+		let form = await req.app.locals.db.models.Form.findOne({
 			where: {
 				uniqueKey: req.params.formUniqueKey
 			},
@@ -258,8 +258,8 @@ router.post('/survey/:formUniqueKey', async (req, res, next) => {
 		}
 
 
-		let survey = await req.app.locals.db.main.Survey.create({
-			formId: 1,
+		let survey = await req.app.locals.db.models.Survey.create({
+			formId: form.id,
 			evaluatee: req.body.evaluatee,
 			evaluatorType: req.body.evaluatorType,
 			evaluatorName: req.body.evaluatorName,

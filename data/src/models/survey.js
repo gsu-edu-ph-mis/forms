@@ -5,8 +5,8 @@ const { DataTypes } = require('sequelize');
 
 //// Modules
 
-module.exports = {
-    attributes: {
+module.exports = (modelName, sequelize) => {
+    return sequelize.define(modelName, {
         formId: {
             type: DataTypes.NUMBER
         },
@@ -103,6 +103,8 @@ module.exports = {
         d5: {
             type: DataTypes.NUMBER
         },
-    },
-    options: { timestamps: true }
+    }, {
+        // Other model options go here
+        timestamps: true
+    })
 }

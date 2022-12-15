@@ -1,20 +1,10 @@
-//// Core modules
+const { DataTypes } = require('sequelize')
 
-//// External modules
-const { DataTypes } = require('sequelize');
 
-//// Modules
-
-module.exports = {
-    attributes: {
-        roles: {
-            type: DataTypes.JSON
-        },
-        permissions: {
-            type: DataTypes.JSON
-        },
+module.exports = (modelName, sequelize) => {
+    return sequelize.define(modelName, {
         firstName: {
-            type: DataTypes.STRING
+            type: DataTypes.STRING,
         },
         middleName: {
             type: DataTypes.STRING
@@ -34,9 +24,16 @@ module.exports = {
         salt: {
             type: DataTypes.STRING
         },
+        roles: {
+            type: DataTypes.JSON
+        },
+        permissions: {
+            type: DataTypes.JSON
+        },
         active: {
             type: DataTypes.BOOLEAN
         },
-    },
-    options: { timestamps: true }
+    }, {
+        // Other model options go here
+    })
 }

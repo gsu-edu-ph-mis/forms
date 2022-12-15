@@ -9,13 +9,13 @@ const moment = require('moment')
 //// Modules
 
 module.exports = {
-	requireAuthUser: async (req, res, next) => {
+    requireAuthUser: async (req, res, next) => {
         try {
             let authUserId = lodash.get(req, 'session.authUserId');
             if (!authUserId) {
                 return res.redirect('/login')
             }
-			let user = await req.app.locals.db.main.User.findOne({ where: { username: authUserId } });
+            let user = await req.app.locals.db.models.User.findOne({ where: { username: authUserId } });
             if (!user) {
                 return res.redirect('/logout') // Prevent redirect loop when user is null
             }
@@ -30,11 +30,15 @@ module.exports = {
     },
     // Assign view variables once - on app start
     once: (req, res, next) => {
-        req.app.locals.app = {}
-        req.app.locals.app.title = CONFIG.app.title;
-        req.app.locals.app.description = CONFIG.description;
-        req.app.locals.CONFIG = lodash.cloneDeep(CONFIG) // Config
-        next();
+        try {
+            req.app.locals.app = {}
+            req.app.locals.app.title = CONFIG.app.title;
+            req.app.locals.app.description = CONFIG.description;
+            req.app.locals.CONFIG = lodash.cloneDeep(CONFIG) // Config
+            next();
+        } catch (error) {
+            next(error);
+        }
     },
     // Assign view variables per request
     perRequest: async (req, res, next) => {
@@ -43,7 +47,7 @@ module.exports = {
             // Authenticated user
             let authUserId = lodash.get(req, 'session.authUserId');
             if (authUserId) {
-                res.locals.user = await req.app.locals.db.main.User.findOne({ where: { username: authUserId } });
+                res.locals.user = await req.app.locals.db.models.User.findOne({ where: { username: authUserId } });
             }
 
             res.locals.acsrf = lodash.get(req, 'session.acsrf');
