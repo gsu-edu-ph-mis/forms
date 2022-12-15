@@ -3,7 +3,6 @@
  * Usage: node scripts/install-evaluatee.js
  */
 //// Core modules
-const fs = require('fs');
 const path = require('path');
 
 //// External modules
@@ -34,23 +33,24 @@ const credLoader = new pigura.ConfigLoader({
 })
 global.CRED = credLoader.getConfig()
 
+const dbConn = require('../data/src/db-connect');
 let adminsList = require('./install-data/evaluatee-list'); // Do not remove semi-colon
 
 
 ; (async () => {
+    let dbInstance = await dbConn.connect()
+
     try {
-        let db = await require('../data/src/db').connect()
+        let Evaluatee = require('../data/src/models/evaluatee')('Evaluatee', dbInstance)
+        await Evaluatee.drop()
+        await Evaluatee.sync()
 
         console.log('Clearing evaluatees...')
-        await db.main.Evaluatee.destroy({
-            truncate: true
-        });
-
 
         let logs = []
         let promises = lodash.map(adminsList, (o) => {
 
-            let evaluatee = db.main.Evaluatee.build({
+            let evaluatee = Evaluatee.build({
                 prefix: o.prefix,
                 firstName: o.firstName,
                 middleName: o.middleName,
@@ -67,10 +67,9 @@ let adminsList = require('./install-data/evaluatee-list'); // Do not remove semi
 
         console.log(`Inserted ${promises.length} evaluatee(s).`)
 
-        await db.sequelize.close()
     } catch (err) {
-        console.error('Error', err)
+        console.error(err)
+    } finally {
+        dbInstance.close();
     }
 })()
-
-
