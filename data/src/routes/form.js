@@ -57,7 +57,7 @@ router.get('/form/create', async (req, res, next) => {
 			return `${start - 10 + o}-${start - 10 + o + 1}`
 		})
 		academicYears.reverse()
-		return res.send(academicYears)
+		// return res.send(academicYears)
 		let data = {
 			now: moment(),
 			academicYears: academicYears
