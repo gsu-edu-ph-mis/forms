@@ -13,10 +13,32 @@ let router = express.Router()
 
 router.get('/', middlewares.requireAuthUser, async (req, res, next) => {
 	try {
-		res.redirect('/form/all');
+		res.redirect('/admin/forms');
 	} catch (err) {
 		next(err);
 	}
+});
+
+router.get('/autocomplete/evaluatees', middlewares.requireAuthUser, async (req, res, next) => {
+    try {
+        let search = lodash.get(req, 'query.s', '');
+        search = new RegExp(search, 'i')
+       
+        let rows = await req.app.locals.db.models.Evaluatee.findAll({
+            where: {}
+        });
+
+        rows = rows.filter(row => search.test(row.firstName) || search.test(row.middleName) || search.test(row.lastName))
+        rows = rows.map(row => {
+            return {
+                id: row.id,
+                name: `${row.firstName} ${row.lastName}`,
+            }
+        })
+        return res.send(rows)
+    } catch (err) {
+        next(err);
+    }
 });
 
 router.get('/survey/:surveyId/preview/:key', async (req, res, next) => {
@@ -53,7 +75,7 @@ router.get('/survey/:surveyId/preview/:key', async (req, res, next) => {
 						"Demonstrate sensitivity to student's ability to attend and absorb content information.",
 						"Integrates sensitivity to his/her learning objectives with those of the students in a collaborative process.",
 						"Makes self available to students beyond official time.",
-						"Regularly engages with the class on the scheduled time and well-prepared to complete the learning activities.",
+						"Regularly comes to class on time, well-groomed and well-prepared to complete assigned responsibilities.",
 						"Keeps accurate records of students' performance and prompt submission of the same.",
 					]
 			},
@@ -83,11 +105,11 @@ router.get('/survey/:surveyId/preview/:key', async (req, res, next) => {
 				title: 'Management of Learning',
 				questions:
 					[
-						"Creates opportunities for intensive and/or contribution of students in class activities",
+						"Creates opportunities for intensive and/ or contribution of students in class activities (e.g. breaks, class into dyads, triads, or buzz/ task groups).",
 						"Assumes roles as facilitator, resource person, coach, inquisitor, integrator, referee in drawing students to contribute to knowledge and understanding of the concepts at hands.",
 						"Designs and implements learning conditions and experiences that promotes healthy exchange and/or confrontations.",
 						"Structures/Re-structures learning and teaching-learning context to enhance attainment of collective learning objectives.",
-						"Uses appropriate teaching modality (e.g. google classroom, lecture presentation, recorded videos, etc.)",
+						"Use of instructional materials (audio/ video materials: fieldtrips, film showing, computer aided instruction and etc.) to reinforce learning processes.",
 					]
 			}
 		}

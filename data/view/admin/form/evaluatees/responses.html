@@ -1,0 +1,170 @@
+{% extends "document.html" %}
+
+{% block body %}
+<div id="vApp" v-cloak :data-pending="pending" class="col-md-12">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div class="d-flex align-items-start">
+            {% include 'admin/form/form-title.html' %}
+        </div>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
+                <a href="/admin/forms/{{form.id}}/delete" class="btn btn-sm btn-outline-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        {% include 'admin/form/form-tabs.html' %}
+    </div>
+
+    <div class="tab-content p-3">
+        
+        {% include 'parts/toaster.html' %}
+
+        <h1 class="h4 mb-3">Evaluatee: {{evaluatee.lastName}}, {{evaluatee.firstName}} {{evaluatee.middleName|first('.')}}</h1>
+
+        {% set surveys = studentEvaluations %}
+        {% set totalA = studentEvaluationsTotalA %}
+        {% set totalB = studentEvaluationsTotalB %}
+        {% set totalC = studentEvaluationsTotalC %}
+        {% set totalD = studentEvaluationsTotalD %}
+        {% set totalScore = studentEvaluationsTotalScore %}
+        {% set totalScorePercentage = studentEvaluationsPercentage %}
+        <h2 class="h6">Students</h2>
+        {% include 'admin/form/evaluatees/survey-table.html' %}
+
+        {% set surveys = supervisorEvaluations %}
+        {% set totalA = supervisorEvaluationsTotalA %}
+        {% set totalB = supervisorEvaluationsTotalB %}
+        {% set totalC = supervisorEvaluationsTotalC %}
+        {% set totalD = supervisorEvaluationsTotalD %}
+        {% set totalScore = supervisorEvaluationsTotalScore %}
+        {% set totalScorePercentage = supervisorEvaluationsPercentage %}
+        <h2 class="h6">Supervisor</h2>
+        {% include 'admin/form/evaluatees/survey-table.html' %}
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script src="{{app.url}}/js/vuejs-auto-complete.js"></script>
+<script src="{{app.url}}/js/vuejs-auto-complete-extend.js"></script>
+<script>
+    const evaluatees = {{evaluatees|default([], true)|stringify|safe}}
+    const evaluateeIds = {{form.evaluateeIds|default([], true)|stringify|safe}}
+    const active = {{form.active|default(false, true)|stringify|safe}}
+
+    var acsrf = '{{acsrf}}';
+
+    var vApp = new Vue({
+        el: '#vApp',
+        delimiters: ["${", "}"],
+        mixins: [
+            window.vueJsAutoCompleteExtendMixin
+        ],
+        components: {
+            'autocomplete': window["vuejs-autocomplete"]
+        },
+        data: {
+            error: '{{flash.error}}',
+            ok: '{{flash.ok}}',
+            pending: false,
+            evaluatees: evaluatees,
+            evaluateeIds: evaluateeIds,
+            evaluateeId: '',
+            active: active,
+            errors: {
+                evaluateeIds: false,
+                evaluateeId: false,
+            },
+        },
+        mounted: function () {
+            const me = this;
+            jQuery('.toast').toast('show')
+            // Uncomment to autofill test data
+            // me.name = ''
+            // me.description = ''
+            // me.academicYear = ''
+            // me.semester = ''
+            // me.ratingPeriodStart = ''
+            // me.ratingPeriodEnd = ''
+            // me.uniqueKey = ''
+            // me.createdBy = ''
+            
+        },
+        computed: {
+
+        },
+        methods: {
+            activeChange: async function() {
+                const me = this
+
+                try {
+                    me.pending = true
+                    let response = await fetch(`/admin/forms/{{form.id}}`, {
+                        method: 'PATCH',
+                        body: JSON.stringify({
+                            acsrf: acsrf,
+                            active: me.active
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    if (!response.ok) {
+                        throw new Error(await response.text())
+                    }
+                    let responseText = await response.text()
+                    console.log(responseText)
+                    jQuery('.toast').toast('show')
+                    me.ok = responseText
+                    me.pending = false
+                } catch (error) {
+                    console.error(error)
+                    me.error = error
+                    jQuery('.toast').toast('show')
+                } finally {
+                    me.pending = false
+
+                }
+            },
+            dataSourceEvaluatee: function(input) {
+                return '/autocomplete/evaluatees?s=' + input
+            },
+            onSelectEvaluatee: function(o){
+                if(!this.isIn(o.value)){
+                    this.evaluateeIds.push(o.value)
+                }
+                this.$refs.autocomplete.close();
+                this.$refs.autocomplete.clear();
+            },
+            onSubmit: function(){
+                const me = this;
+                try {
+                    me.$nextTick(function(){
+                        me.$refs.formMain.submit()
+                    })
+                } catch (err) {
+                    console.error(err)
+                    alert(err.message)
+                }
+            },
+            stringify: function (payload) {
+                return JSON.stringify(payload)
+            },
+            isIn: function (evaluateeId) {
+                var me = this;
+                let index = me.evaluateeIds.indexOf(evaluateeId)
+                return (index > -1) 
+            },
+            removeEvaluateeId: function (evaluateeId) {
+                var me = this;
+                let index = me.evaluateeIds.indexOf(evaluateeId)
+                me.$delete(me.evaluateeIds, index)
+            },
+        }
+
+    });
+</script>
+{% endblock %}

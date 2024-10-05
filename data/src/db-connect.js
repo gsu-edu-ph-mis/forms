@@ -8,7 +8,7 @@ module.exports = {
     connect: async () => {
         try {
 
-            const sequelize = new Sequelize(CONFIG.sequelize);
+            const sequelize = new Sequelize(CONFIG.sqlite);
 
             await sequelize.authenticate()
             console.log(`${moment().format('YYYY-MMM-DD hh:mm:ss A')}: Database connected.`);
@@ -21,12 +21,15 @@ module.exports = {
     attachModels: async (sequelize) => {
         try {
             return {
-                Permission: require('./models/permission')('Permission', sequelize),
-                Role: require('./models/role')('Role', sequelize),
-                User: require('./models/user')('User', sequelize),
+                College: require('./models/college')('College', sequelize),
                 Evaluatee: require('./models/evaluatee')('Evaluatee', sequelize),
                 Form: require('./models/form')('Form', sequelize),
+                Permission: require('./models/permission')('Permission', sequelize),
+                Program: require('./models/program')('Program', sequelize),
+                Role: require('./models/role')('Role', sequelize),
                 Survey: require('./models/survey')('Survey', sequelize),
+                User: require('./models/user')('User', sequelize),
+
             }
         } catch (error) {
             console.log('Connection error:', error.message)

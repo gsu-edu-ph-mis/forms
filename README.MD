@@ -65,3 +65,13 @@ Restart Nginx for changes to take effect
 ## Setup node process using systemd 
 
 See `systemd.service`
+
+
+## SQL
+
+    CREATE DATABASE forms;
+    CREATE USER 'forms_user'@'%' IDENTIFIED BY 'password';
+
+    REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'forms_user'@'%';
+
+    GRANT ALL PRIVILEGES ON forms.* TO 'forms_user'@'%';

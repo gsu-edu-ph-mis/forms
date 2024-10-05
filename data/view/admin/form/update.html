@@ -1,0 +1,193 @@
+{% extends "document.html" %}
+
+{% block body %}
+<div id="vApp" v-cloak :data-pending="pending" class="col-md-12">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div class="d-flex align-items-start">
+            {% include 'admin/form/form-title.html' %}
+        </div>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
+                <a href="/admin/forms/{{form.id}}/delete" class="btn btn-sm btn-outline-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        {% include 'admin/form/form-tabs.html' %}
+    </div>
+    
+    <div class="tab-content p-3">
+        {% include 'parts/toaster.html' %}
+        <!-- Update -->
+        <form ref="formMain" action="?_method=PUT" @submit.prevent="onSubmit" class="bold-label" method="post">
+            <input type="hidden" name="acsrf" value="{{acsrf}}">
+            <div class="form-group" :data-error="errors.name" @click="errors.name=false">
+                <label for="name">Name</label>
+                <input v-model="name" name="name" id="name" type="text" class="form-control">
+            </div>
+        
+            <div class="form-group" :data-error="errors.description" @click="errors.description=false">
+                <label for="description">Description</label>
+                <textarea name="description" id="description" v-model="description" class="form-control" cols="30" rows="5"></textarea>
+            </div>
+        
+            <div class="form-group" :data-error="errors.academicYear" @click="errors.academicYear=false">
+                <label for="academicYear">Academic Year <span class="text-danger">*</span></label>
+                <select v-model="academicYear" name="academicYear" id="academicYear" class="form-control">
+                    <option value=""></option>
+                    {% for academicYear in academicYears %}
+                        <option value="{{academicYear}}">{{academicYear}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        
+            <div class="form-group" :data-error="errors.semester" @click="errors.semester=false">
+                <label for="semester">Semester <span class="text-danger">*</span></label>
+                <select v-model="semester" name="semester" id="semester" class="form-control">
+                    <option value=""></option>
+                    {% for option in semesters %}
+                        <option value="{{option.id}}">{{option.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        
+            <div class="form-row">
+                <div class="col-md-6">
+                    <div class="form-group" :data-error="errors.ratingPeriodStart" @click="errors.ratingPeriodStart=false">
+                        <label for="ratingPeriodStart">Rating Period Start <span class="text-danger">*</span></label>
+                        <input v-model="ratingPeriodStart" name="ratingPeriodStart" id="ratingPeriodStart" type="date" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group" :data-error="errors.ratingPeriodEnd" @click="errors.ratingPeriodEnd=false">
+                        <label for="ratingPeriodEnd">Rating Period End <span class="text-danger">*</span></label>
+                        <input v-model="ratingPeriodEnd" name="ratingPeriodEnd" id="ratingPeriodEnd" type="date" class="form-control">
+                    </div>
+                </div>
+            </div>
+        
+            <div class="form-group" :data-error="errors.collegeId" @click="errors.collegeId=false">
+                <label for="collegeId">College <span class="text-danger">*</span></label>
+                <select v-model="collegeId" name="collegeId" id="collegeId" class="form-control">
+                    <option value=""></option>
+                    {% for college in colleges %}
+                        <option value="{{college.id}}">{{college.name}} ({{college.code}})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <input v-model="uniqueKey" name="uniqueKey" id="uniqueKey" type="hidden" class="form-control">
+            <input v-model="createdBy" name="createdBy" id="createdBy" type="hidden" class="form-control">
+            
+            
+
+            <div class="form-group">
+                <button class="btn btn-primary">Update</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script>
+    var acsrf = '{{acsrf}}';
+
+    var vApp = new Vue({
+        el: '#vApp',
+        delimiters: ["${", "}"],
+        mixins: [
+        ],
+        
+        data: {
+            error: '{{flash.error}}',
+            ok: '{{flash.ok}}',
+            pending: false,
+            name: '{{form.name}}',
+            description: `{{form.description}}`,
+            academicYear: '{{form.academicYear}}',
+            semester: '{{form.semester}}',
+            ratingPeriodStart: '{{form.ratingPeriodStart}}',
+            ratingPeriodEnd: '{{form.ratingPeriodEnd}}',
+            collegeId: '{{form.collegeId}}',
+            uniqueKey: '{{form.uniqueKey}}',
+            createdBy: '{{form.createdBy}}',
+            
+            errors: {
+                name: false,
+                description: false,
+                academicYear: false,
+                semester: false,
+                ratingPeriodStart: false,
+                ratingPeriodEnd: false,
+                collegeId: false,
+                uniqueKey: false,
+                createdBy: false,
+                
+            },
+        },
+        mounted: function () {
+            const me = this;
+            jQuery('.toast').toast('show')
+            // Uncomment to autofill test data
+            // me.name = ''
+            // me.description = ''
+            // me.academicYear = ''
+            // me.semester = ''
+            // me.ratingPeriodStart = ''
+            // me.ratingPeriodEnd = ''
+            // me.uniqueKey = ''
+            // me.createdBy = ''
+            
+        },
+        computed: {
+
+        },
+        methods: {
+            onSubmit: function(){
+                const me = this;
+                try {
+                        if(!me.name){
+                            me.errors.name = true
+                            throw new Error('Name is required.')
+                        }
+                        
+                        if(!me.academicYear){
+                            me.errors.academicYear = true
+                            throw new Error('Academic Year is required.')
+                        }
+                        
+                        if(!me.semester){
+                            me.errors.semester = true
+                            throw new Error('Semester is required.')
+                        }
+                        
+                        if(!me.ratingPeriodStart){
+                            me.errors.ratingPeriodStart = true
+                            throw new Error('Rating Period Start is required.')
+                        }
+                        
+                        if(!me.ratingPeriodEnd){
+                            me.errors.ratingPeriodEnd = true
+                            throw new Error('Rating Period End is required.')
+                        }
+
+                        if(!me.collegeId){
+                            me.errors.collegeId = true
+                            throw new Error('College is required.')
+                        }
+
+                        me.$nextTick(function(){
+                        me.$refs.formMain.submit()
+                    })
+                } catch (err) {
+                    console.error(err)
+                    alert(err.message)
+                }
+            }
+        }
+
+    });
+</script>
+{% endblock %}

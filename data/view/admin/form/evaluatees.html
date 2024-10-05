@@ -1,0 +1,233 @@
+{% extends "document.html" %}
+
+{% block body %}
+<div id="vApp" v-cloak :data-pending="pending" class="col-md-12">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div class="d-flex align-items-start">
+            {% include 'admin/form/form-title.html' %}
+        </div>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
+                <a href="/admin/forms/{{form.id}}/delete" class="btn btn-sm btn-outline-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        {% include 'admin/form/form-tabs.html' %}
+    </div>
+
+    <div class="tab-content p-3">
+        {% include 'parts/toaster.html' %}
+        <!-- Update -->
+        <form ref="formMain" action="?_method=patch" @submit.prevent="onSubmit" class="bold-label" method="post">
+            <input type="hidden" name="acsrf" value="{{acsrf}}">
+            <input type="hidden" name="id" value="{{form.id}}">
+            <div class="form-group" :data-error="errors.evaluateeIds" @click="errors.evaluateeIds=false">
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped">
+                        <tr class="bg-gray">
+                            <th width="33%">
+                                <span>Name</span> 
+                                <em>(${evaluateeIds.length})</em>
+                            </th>
+                            <th width="33%">Position</th>
+                            <th width="33%">College</th>
+                        </tr>
+                        
+                        <tr>
+                            <th>
+                                <input v-model="filterName" type="search" class="form-control" placeholder="Filter">
+                            </th>
+                            <th>
+                                <input v-model="filterPos" type="search" class="form-control" placeholder="Filter">
+                            </th>
+                            <th>
+                                <input v-model="filterCollege" type="search" class="form-control" placeholder="Filter">
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>
+                                
+                                <button type="button" class="btn btn-sm btn-light p-1" @click.prevent="checkAll">
+                                    <svg width="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>Check</title><path fill="currentColor" d="M20,2H8A2,2 0 0,0 6,4V16A2,2 0 0,0 8,18H20A2,2 0 0,0 22,16V4A2,2 0 0,0 20,2M20,16H8V4H20V16M16,20V22H4A2,2 0 0,1 2,20V7H4V20H16M18.53,8.06L17.47,7L12.59,11.88L10.47,9.76L9.41,10.82L12.59,14L18.53,8.06Z" /></svg>    
+                                </button>
+                                <button type="button" class="btn btn-sm btn-light p-1" @click.prevent="uncheckAll">
+                                    <svg width="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>Uncheck</title><path fill="currentColor" d="M20,16V4H8V16H20M22,16A2,2 0 0,1 20,18H8C6.89,18 6,17.1 6,16V4C6,2.89 6.89,2 8,2H20A2,2 0 0,1 22,4V16M16,20V22H4A2,2 0 0,1 2,20V7H4V20H16Z" /></svg>    
+                                </button>
+                                
+                            </th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                        <template v-for="evaluatee in evaluatees">
+                            <tr v-show="evaluatee.show">
+                                <td>
+                                    <div class="custom-control custom-checkbox">
+                                        <input v-model="evaluateeIds" name="evaluateeIds[]" :value="evaluatee.id" :id="`evaluatee` + evaluatee.id" type="checkbox" class="custom-control-input">
+                                        <label class="custom-control-label font-weight-normal" :for="`evaluatee` + evaluatee.id">${evaluatee.lastName}, ${evaluatee.firstName}</label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span>${evaluatee.position}</span>
+                                </td>
+                                <td>
+                                    <span v-for="college in evaluatee.colleges" @click="filterCollege=college" class="mr-1 btn btn-sm btn-secondary p-1">${college}</span>
+                                </td>
+                            </tr>
+                        </template>
+                    </table>
+                </div>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-primary">Update</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script src="{{app.url}}/js/vuejs-auto-complete.js"></script>
+<script src="{{app.url}}/js/vuejs-auto-complete-extend.js"></script>
+<script>
+    let evaluatees = {{evaluatees|default([], true)|stringify|safe}}
+    const evaluateeIds = {{form.evaluateeIds|default([], true)|stringify|safe}}
+    var acsrf = '{{acsrf}}';
+    evaluatees = evaluatees.map(e => {
+        e.show = true
+        return e
+    })
+    var vApp = new Vue({
+        el: '#vApp',
+        delimiters: ["${", "}"],
+        mixins: [
+            window.vueJsAutoCompleteExtendMixin
+        ],
+        components: {
+            'autocomplete': window["vuejs-autocomplete"]
+        },
+        data: {
+            error: '{{flash.error}}',
+            ok: '{{flash.ok}}',
+            pending: false,
+            evaluatees: evaluatees,
+            evaluateeIds: evaluateeIds,
+            evaluateeId: '',
+            filterName: '',
+            filterPos: '',
+            filterCollege: '',
+            massChecker: false,
+            errors: {
+                evaluateeIds: false,
+                evaluateeId: false,
+            },
+        },
+        
+        mounted: function () {
+            const me = this;
+            jQuery('.toast').toast('show')
+            // Uncomment to autofill test data
+            // me.name = ''
+            // me.description = ''
+            // me.academicYear = ''
+            // me.semester = ''
+            // me.ratingPeriodStart = ''
+            // me.ratingPeriodEnd = ''
+            // me.uniqueKey = ''
+            // me.createdBy = ''
+            
+        },
+        computed: {
+
+        },
+        watch: {
+            filterName: function(){
+                const me = this
+                me.onFilterEvs()
+            },
+            filterPos: function(){
+                const me = this
+                me.onFilterEvs()
+            },
+            filterCollege: function(){
+                const me = this
+                me.onFilterEvs()
+            },
+        },
+        methods: {
+            uncheckAll: function(evaluatee){
+                const me = this
+                me.evaluatees.forEach(row => {
+                    if(row.show){
+                        let index = me.evaluateeIds.indexOf(row.id)
+                        if(index > -1) me.evaluateeIds.splice(index, 1)
+                    }
+                })
+                me.evaluateeIds = [...new Set(me.evaluateeIds)]
+            },
+            checkAll: function(evaluatee){
+                const me = this
+                me.evaluatees.forEach(row => {
+                    if(row.show){
+                        me.evaluateeIds.push(row.id)
+                    }
+                })
+                me.evaluateeIds = [...new Set(me.evaluateeIds)]
+            },
+            onFilterEvs: function() {
+                const me = this
+                
+                me.evaluatees = me.evaluatees.map(row => {
+
+                    let showName = true 
+                    if(me.filterName){
+                        const search1 = new RegExp(me.filterName, 'i')
+                        showName = search1.test(row.firstName) || search1.test(row.middleName) || search1.test(row.lastName)
+                    } else {
+                        showName = true
+
+                    }
+
+                    let showPos = true 
+                    if(me.filterPos){
+                        const search2 = new RegExp(me.filterPos, 'i')
+                        showPos = search2.test(row.position)
+                    } else {
+                        showPos = true
+                    }
+
+                    let showCollege = true 
+                    if(me.filterCollege){
+                        showCollege = row.colleges.filter(c => {
+                            const search3 = new RegExp(me.filterCollege, 'i')
+                            return search3.test(c)
+                        }).length > 0
+                    } else {
+                        showCollege = true
+                    }
+                    
+                    if(showName && showPos && showCollege){
+                        row.show = true
+                    } else {
+                        row.show = false
+                    }
+                    return row
+                })
+            },
+            onSubmit: function(){
+                const me = this;
+                try {
+                    me.$nextTick(function(){
+                        me.$refs.formMain.submit()
+                    })
+                } catch (err) {
+                    console.error(err)
+                    alert(err.message)
+                }
+            },
+        }
+
+    });
+</script>
+{% endblock %}

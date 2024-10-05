@@ -1,0 +1,149 @@
+//// Core modules
+
+//// External modules
+const express = require('express')
+const flash = require('kisapmata')
+
+//// Modules
+const middlewares = require('../../middlewares')
+
+// Router
+let router = express.Router()
+
+router.use('/{{baseRoute}}', middlewares.requireAuthUser)
+
+router.get('/{{baseRoute}}/{{modelUrlFriend}}s', middlewares.guardRoute(['read_all_{{modelVarName}}']), async (req, res, next) => {
+    try {
+        let rows = await req.app.locals.db.models.{{modelNoSpaceCase}}.findAll({
+            where: {}
+        });
+
+        let data = {
+            flash: flash.get(req, '{{modelVarName}}'),
+            rows: rows
+        }
+        res.render('{{baseRoute}}/{{modelUrlFriend}}s/all.html', data);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get('/{{baseRoute}}/{{modelUrlFriend}}s/create', middlewares.guardRoute(['create_{{modelVarName}}']), async (req, res, next) => {
+    try {
+        let data = {
+            flash: flash.get(req, '{{modelVarName}}'),
+        }
+        res.render('{{baseRoute}}/{{modelUrlFriend}}s/create.html', data);
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.post('/{{baseRoute}}/{{modelUrlFriend}}s', middlewares.guardRoute(['create_{{modelVarName}}']), middlewares.antiCsrfCheck, async (req, res, next) => {
+    try {
+        let data = req.body
+
+        let {{modelVarName}} = await req.app.locals.db.models.{{modelNoSpaceCase}}.create({
+            {% for key, field in fields %}{{key}}: data.{{key}},
+            {% endfor %}
+        });
+
+        flash.ok(req, '{{modelVarName}}', '{{modelSpaceCase}} created.')
+        res.redirect(`/{{baseRoute}}/{{modelUrlFriend}}s/`+ {{modelVarName}}.id )
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get('/{{baseRoute}}/{{modelUrlFriend}}s/:{{modelVarName}}Id', middlewares.guardRoute(['update_{{modelVarName}}']), async (req, res, next) => {
+    try {
+        let {{modelVarName}} = await req.app.locals.db.models.{{modelNoSpaceCase}}.findOne({
+            where: {
+                id: req.params.{{modelVarName}}Id
+            }
+        });
+        if(!{{modelVarName}}){
+            throw new Error('{{modelSpaceCase}} not found.')
+        }
+
+        let data = {
+            flash: flash.get(req, '{{modelVarName}}'),
+            {{modelVarName}}: {{modelVarName}}
+        }
+        res.render(`{{baseRoute}}/{{modelUrlFriend}}s/update.html`, data)
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.put('/{{baseRoute}}/{{modelUrlFriend}}s/:{{modelVarName}}Id', middlewares.guardRoute(['update_{{modelVarName}}']), middlewares.antiCsrfCheck, async (req, res, next) => {
+    try {
+        let {{modelVarName}} = await req.app.locals.db.models.{{modelNoSpaceCase}}.findOne({
+            where: {
+                id: req.params.{{modelVarName}}Id
+            }
+        });
+        if(!{{modelVarName}}){
+            throw new Error('{{modelSpaceCase}} not found.')
+        }
+
+        let data = req.body
+
+        await req.app.locals.db.models.{{modelNoSpaceCase}}.update({ 
+            {% for key, field in fields %}{{key}}: data.{{key}},
+            {% endfor %}
+        }, 
+        {
+            where: {
+                id: {{modelVarName}}.id
+            }
+        });
+
+        flash.ok(req, '{{modelVarName}}', '{{modelNoSpaceCase}} updated.')
+        res.redirect(`/{{baseRoute}}/{{modelUrlFriend}}s/`+ {{modelVarName}}.id )
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get('/{{baseRoute}}/{{modelUrlFriend}}s/:{{modelVarName}}Id/delete', middlewares.guardRoute(['delete_{{modelVarName}}']), async (req, res, next) => {
+    try {
+        let {{modelVarName}} = await req.app.locals.db.models.{{modelNoSpaceCase}}.findOne({
+            where: {
+                id: req.params.{{modelVarName}}Id
+            }
+        });
+        if(!{{modelVarName}}){
+            throw new Error('{{modelSpaceCase}} not found.')
+        }
+
+        let data = {
+            {{modelVarName}}: {{modelVarName}}
+        }
+        res.render(`{{baseRoute}}/{{modelUrlFriend}}s/delete.html`, data)
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.delete('/{{baseRoute}}/{{modelUrlFriend}}s/:{{modelVarName}}Id', middlewares.guardRoute(['delete_{{modelVarName}}']), middlewares.antiCsrfCheck, async (req, res, next) => {
+    try {
+        let {{modelVarName}} = await req.app.locals.db.models.{{modelNoSpaceCase}}.findOne({
+            where: {
+                id: req.params.{{modelVarName}}Id
+            }
+        });
+        if(!{{modelVarName}}){
+            throw new Error('{{modelSpaceCase}} not found.')
+        }
+
+        await {{modelVarName}}.destroy()
+
+        flash.ok(req, '{{modelVarName}}', '{{modelNoSpaceCase}} deleted.')
+        res.redirect(`/{{baseRoute}}/{{modelUrlFriend}}s`)
+    } catch (err) {
+        next(err);
+    }
+});
+
+module.exports = router;

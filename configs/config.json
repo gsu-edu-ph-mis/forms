@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "Forms",
+    "title": "EV-Forms",
     "description": "GSU evaluation forms",
     "port": "9197",
     "url": "http://localhost:9197",
@@ -19,7 +19,7 @@
   },
   "nunjucks": {
     "loader": {
-      "watch": true,
+      "watch": false,
       "noCache": true
     },
     "environment": {
@@ -37,11 +37,11 @@
     },
     "cookie": {
       "httpOnly": false,
-      "maxAge": 2592000,
+      "maxAge": 31536000000,
       "secure": false
     }
   },
-  "sequelize": {
+  "sqlite": {
     "database": "app",
     "host": "localhost",
     "dialect": "sqlite",
@@ -60,8 +60,50 @@
     },
     "logging": false
   },
+  "mysql": {
+    "database": "forms",
+    "username": "root",
+    "password": "",
+    "host": "localhost",
+    "dialect": "mysql",
+    "pool": {
+      "max": 5,
+      "min": 0,
+      "acquire": 30000,
+      "idle": 10000
+    },
+    "operatorsAliases": "false",
+    "define": {
+      "freezeTableName": "true",
+      "timestamps": "false",
+      "paranoid": true
+    },
+    "logging": false
+  },
   "recaptchav3": {
     "enable": false
   },
-  "loginDelay": 0
+  "loginDelay": 0,
+  "semesters": [
+    {
+      "id": 1,
+      "name": "First Semester"
+    },
+    {
+      "id": 2,
+      "name": "Second Semester"
+    },
+    {
+      "id": 3,
+      "name": "Summer"
+    }
+  ],
+  "suffixes": [
+    "Jr.",
+    "II",
+    "III",
+    "IV",
+    "V",
+    "Sr."
+  ]
 }

@@ -9,6 +9,7 @@ const flash = require('kisapmata')
 const lodash = require('lodash')
 const moment = require('moment')
 const sharp = require('sharp')
+const { Op } = require('sequelize')
 
 //// Modules
 const passwordMan = require('../password-man')
@@ -88,7 +89,7 @@ router.post('/login', async (req, res, next) => {
         lodash.set(req, 'session.acsrf', antiCsrfToken);
 
         // Redirects
-        return res.redirect('/');
+        return res.redirect('/admin/forms');
     } catch (err) {
         console.error(err)
         flash.error(req, 'login', err.message);
@@ -120,13 +121,32 @@ router.get('/survey/:formUniqueKey', async (req, res, next) => {
 			where: {
 				uniqueKey: req.params.formUniqueKey
 			},
-			raw: true,
 		})
 		if (!form) {
 			throw new Error('Not found.')
 		}
 
-		let evaluatees = await req.app.locals.db.models.Evaluatee.findAll({ raw: true })
+		if (!form.active) {
+			throw new Error('This form is no longer accepting responses.')
+		}
+
+		if (!form.collegeId) {
+			throw new Error('This form must have a chosen college.')
+		}
+
+		let evaluatees = await req.app.locals.db.models.Evaluatee.findAll({ 
+			where: {},
+			raw: true,
+			order: [
+				['lastName', 'ASC']
+			],
+		})
+		evaluatees = evaluatees.filter(e => {
+			return form.evaluateeIds?.includes(e.id)
+		})
+		if(evaluatees.length <= 0){
+			throw new Error('Form does not contain evaluatees.')
+		}
 
 		let ratingPeriods = Array.from({ length: 10 }, (_, i) => i)
 		ratingPeriods = ratingPeriods.map((o) => {
@@ -143,7 +163,7 @@ router.get('/survey/:formUniqueKey', async (req, res, next) => {
 						"Demonstrate sensitivity to student's ability to attend and absorb content information.",
 						"Integrates sensitivity to his/her learning objectives with those of the students in a collaborative process.",
 						"Makes self available to students beyond official time.",
-						"Regularly engages with the class on the scheduled time and well-prepared to complete the learning activities.",
+						"Regularly comes to class on time, well-groomed and well-prepared to complete assigned responsibilities.",
 						"Keeps accurate records of students' performance and prompt submission of the same.",
 					]
 			},
@@ -173,23 +193,15 @@ router.get('/survey/:formUniqueKey', async (req, res, next) => {
 				title: 'Management of Learning',
 				questions:
 					[
-						"Creates opportunities for intensive and/or contribution of students in class activities",
+						"Creates opportunities for intensive and/ or contribution of students in class activities (e.g. breaks, class into dyads, triads, or buzz/ task groups).",
 						"Assumes roles as facilitator, resource person, coach, inquisitor, integrator, referee in drawing students to contribute to knowledge and understanding of the concepts at hands.",
 						"Designs and implements learning conditions and experiences that promotes healthy exchange and/or confrontations.",
 						"Structures/Re-structures learning and teaching-learning context to enhance attainment of collective learning objectives.",
-						"Uses appropriate teaching modality (e.g. google classroom, lecture presentation, recorded videos, etc.)",
+						"Use of instructional materials (audio/ video materials: fieldtrips, film showing, computer aided instruction and etc.) to reinforce learning processes.",
 					]
 			}
 		}
 		// return res.send(ratingPeriods)
-
-		evaluatees = evaluatees.map((e) => {
-			e.photo = e.firstName.toLowerCase().trim().replace(/\s/g, '').replace(/ñ/, 'n').replace(/Ñ/, 'N')
-			e.photo += '.' + e.lastName.toLowerCase().trim().replace(/\s/g, '').replace(/ñ/, 'n').replace(/Ñ/, 'N')
-			e.photo += `.jpg`
-			e.name = `${e.prefix} ${e.firstName} ${e.lastName}`
-			return e
-		})
 
 		// return res.send(questionGroups)
 		let answers = {
@@ -214,11 +226,20 @@ router.get('/survey/:formUniqueKey', async (req, res, next) => {
 			D4: null,
 			D5: null,
 		}
-		// answers = lodash.mapValues(answers, a => {
-		// 	return 5
-		// })
+		answers = lodash.mapValues(answers, a => {
+			return 5
+		})
 		// answers.B2 = null
 		// answers.D5 = null
+
+		let programs = await req.app.locals.db.models.Program.findAll({
+			where: {
+				collegeId: form.collegeId
+			},
+			order: [
+				['name', 'ASC']
+			]
+		})
 		let data = {
 			now: moment(),
 			form: form,
@@ -226,8 +247,9 @@ router.get('/survey/:formUniqueKey', async (req, res, next) => {
 			ratingPeriods: ratingPeriods,
 			evaluatees: evaluatees,
 			answers: answers,
+			programs: programs,
 		}
-		res.render('form/teaching-effectiveness.html', data)
+		res.render('form/teaching-effectiveness copy.html', data)
 	} catch (err) {
 		next(err)
 	}
@@ -245,6 +267,10 @@ router.post('/survey/:formUniqueKey', async (req, res, next) => {
 			throw new Error('Not found.')
 		}
 
+		if (!form.active) {
+			throw new Error('This form is no longer accepting responses.')
+		}
+		
 		let base64 = lodash.get(req.body.evaluatorSignature.split(';base64,'), '1', '')
 		if (base64) {
 			let buffer = Buffer.from(base64, 'base64');

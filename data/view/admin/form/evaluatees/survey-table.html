@@ -1,0 +1,91 @@
+{% if surveys.length <= 0 %}
+    <p>None found.</p>
+{% else %}
+    <div class="table-responsive">
+        <table class="table table-sm table-striped">
+            <thead>
+                <tr>
+                    <th class="text-center" width="1%"></th>
+                    <th>Evaluator</th>
+                    <th>Subject</th>
+                    <!-- <th width="15%"></th> -->
+                    <th width="3%">A</th>
+                    <th width="3%">B</th>
+                    <th width="3%">C</th>
+                    <th width="3%">D</th>
+                    <th width="15%">Score</th>
+                    <th width="10%"></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for survey in surveys %}
+                <tr>
+                    <td>{{loop.index}}</td>
+                    <td>{{survey.evaluatorName}}</td>
+                    <td>{{survey.evaluatorSubject}}</td>
+                    <!-- <td>{{survey.evaluatorType|capitalize}}</td> -->
+                    <td>
+                        {{survey.a}}
+                    </td>
+                    <td>
+                        {{survey.b}}
+                    </td>
+                    <td>
+                        {{survey.c}}
+                    </td>
+                    <td>
+                        {{survey.d}}
+                    </td>
+                    <td>
+                        {{survey.score}}
+                    </td>
+                    <td>
+                        <a href="/survey/{{survey.id}}/preview" class="text-primary">
+                            <svg width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>Preview</title><path fill="currentColor" d="M12,9.5A2.5,2.5 0 0,0 9.5,12A2.5,2.5 0 0,0 12,14.5A2.5,2.5 0 0,0 14.5,12A2.5,2.5 0 0,0 12,9.5M12,13A1,1 0 0,1 11,12A1,1 0 0,1 12,11A1,1 0 0,1 13,12A1,1 0 0,1 12,13M12,9.5A2.5,2.5 0 0,0 9.5,12A2.5,2.5 0 0,0 12,14.5A2.5,2.5 0 0,0 14.5,12A2.5,2.5 0 0,0 12,9.5M12,13A1,1 0 0,1 11,12A1,1 0 0,1 12,11A1,1 0 0,1 13,12A1,1 0 0,1 12,13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,16C9.37,16 7,14.43 6,12C7.38,8.69 11.19,7.12 14.5,8.5C16.08,9.16 17.34,10.42 18,12C17,14.43 14.63,16 12,16M12,9.5A2.5,2.5 0 0,0 9.5,12A2.5,2.5 0 0,0 12,14.5A2.5,2.5 0 0,0 14.5,12A2.5,2.5 0 0,0 12,9.5M12,13A1,1 0 0,1 11,12A1,1 0 0,1 12,11A1,1 0 0,1 13,12A1,1 0 0,1 12,13Z" /></svg>
+                        </a> 
+                        <a href="/survey/{{survey.id}}/pdf" class="text-primary">
+                            <svg width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>PDF</title><path fill="currentColor" d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3M9.5 11.5C9.5 12.3 8.8 13 8 13H7V15H5.5V9H8C8.8 9 9.5 9.7 9.5 10.5V11.5M14.5 13.5C14.5 14.3 13.8 15 13 15H10.5V9H13C13.8 9 14.5 9.7 14.5 10.5V13.5M18.5 10.5H17V11.5H18.5V13H17V15H15.5V9H18.5V10.5M12 10.5H13V13.5H12V10.5M7 10.5H8V11.5H7V10.5Z" /></svg>
+                        </a>
+                        {% if survey.comments %}
+                        <a onclick="alert(`{{survey.comments}}`); return false;" href="/survey/{{survey.id}}/comments" class="text-primary">
+                            <svg width="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>Comments</title><path fill="currentColor" d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4C22,2.89 21.1,2 20,2Z" /></svg>
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="3" class="text-right">Total</td>
+                <td>
+                    {{totalA}}
+                </td>
+                <td>
+                    {{totalB}}
+                </td>
+                <td>
+                    {{totalC}}
+                </td>
+                <td>
+                    {{totalD}}
+                </td>
+                <td>
+                    <em>{{totalScore}} / {{surveys.length}}</em> = <strong>{{totalScorePercentage}}%</strong>
+                </td>
+                <td>
+                    
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
+
+        <div class="col-md-6 text-center text-md-left">
+
+        </div>
+        <div class="col-md-6 text-center text-md-right">
+            {% include "parts/pagination.html" %}
+        </div>
+    </div>
+{% endif %}
+

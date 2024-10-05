@@ -6,15 +6,14 @@
         <div class="col-md-5 ml-auto mr-auto pt-5 login-height">
             <div class="login-form" id="vApp" v-cloak>
                 <div class="text-center position-relative mb-4">
-                    <img class="position-relative" width="100" src="/images/logo-mis.png" alt="Logo">
+                    <img class="position-relative" width="100" src="/images/logo.png" alt="Logo">
                 </div>
-                <h1 class="text-center h3 mb-4">GSU Evaluation Forms</h1>
+                <h1 class="text-center h3 mb-4">Evaluation Forms</h1>
                 <div>
                     {% include 'parts/flash.html' %}
                     <form ref="form" v-on:submit.prevent="onSubmit" action="/login" method="POST" novalidate>
                         <div class="form-group">
                             <input v-bind:readonly="pending" placeholder="Username..." v-model="username" type="username" name="username" class="form-control" autocomplete="off">
-                            <small class="invalid-feedback">${getError('username')}</small>
                         </div>
                         <div class="form-group">
                             <div class="toggled-password-group">
@@ -24,7 +23,6 @@
                                     <svg style="width:18px;height:18px" viewBox="0 0 24 24" ><path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z" /></svg>
                                 </button>
                             </div>
-                            <small class="invalid-feedback">${getError('password')}</small>
                         </div>
                         <input type="hidden" name="recaptchaToken" v-model="recaptchaToken">
                         <div class="form-group">
@@ -48,24 +46,14 @@
         el: '#vApp',
         delimiters: ["${", "}"],
         mixins: [
-            window.vuelidate.validationMixin,
-            window.vuelidateExtendMixin,
         ],
         data: {
             pending: false,
-            username: '{{username}}',
-            password: '{{password}}',
+            username: '{{username}}nico.amarilla',
+            password: '{{password}}3ef9277105',
             passwordType: 'password',
             recaptchaEnable: {{CONFIG.recaptchav3.enable|default(false, true)}},
             recaptchaToken: '',
-        },
-        validations: {
-            username: {
-                required: window.validators.required
-            },
-            password: {
-                required: window.validators.required
-            },
         },
         computed: {
             disabled: function(){
@@ -84,10 +72,7 @@
             },
             onSubmit: function(){
                 var me = this;
-                me.$v.$touch()
-                if (me.$v.$error) {
-                    alert('Please correct the errors to continue.')
-                } else {
+                
                     me.pending = true;
                     if(me.recaptchaEnable){
                         grecaptcha.ready(function() {
@@ -103,7 +88,6 @@
                             me.$refs.form.submit();
                         });
                     }
-                }
             }
         }
     });

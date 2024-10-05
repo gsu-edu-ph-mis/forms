@@ -113,7 +113,7 @@ package-lock.json
 credentials/*
 
 # Hide databases
-data/app.db
+data/*.db
 data/sessions.db
 data/*.db-journal
 
