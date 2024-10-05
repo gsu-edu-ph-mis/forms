@@ -8,5 +8,10 @@
       "noCache": false
     }
   },
+  "session": {
+    "cookie": {
+      "maxAge": 2592000
+    }
+  },
   "loginDelay": 5
 }

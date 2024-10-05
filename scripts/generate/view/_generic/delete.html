@@ -1,0 +1,50 @@
+{%raw%}{% extends "document.html" %}{%endraw%}
+
+{%raw%}{% block body %}{%endraw%}
+<div id="vApp" v-cloak :data-pending="pending" class="col-md-12">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div class="d-flex align-items-start">
+            <h1 class="h4">Delete {{modelSpaceCase}}</h1>
+        </div>
+    </div>
+    <div></div>
+    <div class="tab-content p-3">
+        <!-- Update -->
+        <form action="/{{baseRoute}}/{{modelUrlFriend}}s/{% raw %}{{{% endraw %}{{modelVarName}}.id}}?_method=delete" class="bold-label" method="post">
+            <input type="hidden" name="acsrf" value="{% raw %}{{acsrf}}{% endraw %}">
+            <p>ID: {% raw %}{{{% endraw %}{{modelVarName}}.id}}</p>
+           
+            <div class="form-group">
+                <button class="btn btn-danger">Delete</button>
+            </div>
+        </form>
+    </div>
+</div>
+{%raw%}{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script>
+    var acsrf = '{{acsrf}}';
+
+    var vApp = new Vue({
+        el: '#vApp',
+        delimiters: ["${", "}"],
+        mixins: [
+        ],
+        data: {
+            pending: false,
+        },
+        mounted: function () {
+            const me = this;
+
+
+        },
+        computed: {
+
+        },
+        methods: {
+
+        }
+    });
+</script>
+{% endblock %}{%endraw%}

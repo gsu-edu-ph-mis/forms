@@ -3,15 +3,14 @@
 {% block body %}
 <div class="col-md-12">
     <div class="row align-items-end mb-4 text-center">
-        <div class="col-2"><img src="/images/logo-gsc.png" alt="Logo"></div>
-        <div class="col-4">
+        <div class="col-2"><img src="/images/logo.png" style="max-height:100px" alt="Logo"></div>
+        <div class="col-4" style="font-family: 'Century Gothic';">
             <p class="mb-0">Republic of the Philippines</p>
-            <p class="font-weight-bold mb-0">State Universities and Colleges</p>
             <p class="font-weight-bold mb-0">GUIMARAS STATE COLLEGE</p>
-            <p class="mb-0">McLain, Buenavista, Guimaras</p>
+            <p class="mb-0">Mc Lain, Buenavista, Guimaras</p>
         </div>
         <div class="col-3">
-            <img src="/images/socotec-sm.jpg" alt="">
+            <img src="/images/pab.jpg" alt="">
         </div>
         <div class="col-3">
             <table class="table table-sm table-doc-code font-serif mb-1">
@@ -19,7 +18,7 @@
                     <th class="text-center">Document Code No.</th>
                 </tr>
                 <tr>
-                    <td>FM-DPM-GSC-EPE-01</td>
+                    <td>FM-DPM-GSU-EPE-01</td>
                 </tr>
             </table>
             <table class="table table-sm table-doc-code font-serif mb-0">
@@ -29,8 +28,8 @@
                     <th>Page No.</th>
                 </tr>
                 <tr class="fz-12">
-                    <td>01</td>
-                    <td>7 May 2018</td>
+                    <td>04</td>
+                    <td>10 May 2024</td>
                     <td>1 of 1</td>
                 </tr>
             </table>
@@ -51,15 +50,8 @@
                 </div>
                 <div class="font-weight-bold">Evaluators: </div>
                 <div class="pl-5 d-flex mb-1">
-                    <div class="font-weight-bold align-items-center d-flex mr-5">
-                        <div class="circle mr-1 {% if survey.evaluatorType == 'self' %}circled{% endif %}"></div>
-                        <div>Self</div>
-                    </div>
-                    <div class="font-weight-bold align-items-center d-flex mr-5">
-                        <div class="circle mr-1 {% if survey.evaluatorType == 'peer' %}circled{% endif %}"></div>
-                        <div>Peer</div>
-                    </div>
-                    <div class="font-weight-bold align-items-center d-flex mr-5">
+                    
+                    <div class="font-weight-bold align-items-center d-flex mr-5 pl-5">
                         <div class="circle mr-1 {% if survey.evaluatorType == 'student' %}circled{% endif %}"></div>
                         <div>Student</div>
                     </div>
@@ -98,7 +90,7 @@
                     <tr>
                         <td class="text-center">1</td>
                         <td class="text-center">Poor</td>
-                        <td>The facultyfails to meet job requirements.</td>
+                        <td>The faculty fails to meet job requirements.</td>
                     </tr>
                 </table>
                 {% for letter, group in questionGroups %}

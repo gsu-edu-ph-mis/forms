@@ -1,0 +1,54 @@
+{% extends "document.html" %}
+
+{% block body %}
+<div class="col-md-12">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div class="d-flex align-items-start">
+            <h1 class="h5 mb-0">View All</h1>
+        </div>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
+                <a href="/admin/programs/create" class="btn btn-sm btn-outline-primary">Create</a>
+            </div>
+        </div>
+    </div>
+   
+    <div class="tab-content p-3">
+        
+        {% include 'parts/flash.html' %}
+
+        {% if rows.length <= 0 %}
+
+            <div class="alert alert-info">No Program found.</div>
+
+        {% else %}
+        <div class="table-responsive">
+            <table class="table table-sm table-striped border mb-0">
+                <tr>
+                    <th>Name</th>
+                    <th>Code</th>
+                    <th>Campus</th>
+                    <th>Active</th>
+                    <th>College</th>
+                    <th>&nbsp;</th>
+                </tr>
+                {% for row in rows %}
+                <tr>
+                    <td>{{row.name}}</td>
+                    <td>{{row.code}}</td>
+                    <td>{{row.campus}}</td>
+                    <td>
+                        {% if row.active %}Yes{% else %}No{% endif %}
+                    </td>
+                    <td>{{row.college.code}}</td>
+                    <td>
+                        <a href="/admin/programs/{{row.id}}">Update</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

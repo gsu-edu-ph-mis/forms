@@ -1,0 +1,46 @@
+{%raw%}{% extends "document.html" %}{%endraw%}
+
+{%raw%}{% block body %}{%endraw%}
+<div class="col-md-12">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div class="d-flex align-items-start">
+            <h1 class="h5 mb-0">View All</h1>
+        </div>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
+                <a href="/{{baseRoute}}/{{modelUrlFriend}}s/create" class="btn btn-sm btn-outline-primary">Create</a>
+            </div>
+        </div>
+    </div>
+   
+    <div class="tab-content p-3">
+        
+        {%raw%}{% include 'parts/flash.html' %}{%endraw%}
+
+        {%raw%}{% if rows.length <= 0 %}{%endraw%}
+
+            <div class="alert alert-info">No {{modelSpaceCase}} found.</div>
+
+        {%raw%}{% else %}{%endraw%}
+        <div class="table-responsive">
+            <table class="table table-sm table-striped border mb-0">
+                <tr>
+                    {% for key, field in fields %}<th>{{key|start_case}}</th>{% endfor %}
+                    <th>&nbsp;</th>
+                </tr>
+                {%raw%}{% for row in rows %}{%endraw%}
+                <tr>
+                    {% for key, field in fields %}
+                        <td>{%raw%}{{row{%endraw%}.{{key}}{%raw%}}}{%endraw%}</td>
+                    {% endfor %}
+                    <td>
+                        <a href="/{{baseRoute}}/{{modelUrlFriend}}s/{%raw%}{{row.id}}{%endraw%}">Update</a>
+                    </td>
+                </tr>
+                {%raw%}{% endfor %}{%endraw%}
+            </table>
+        </div>
+        {%raw%}{% endif %}{%endraw%}
+    </div>
+</div>
+{%raw%}{% endblock %}{%endraw%}

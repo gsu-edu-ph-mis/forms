@@ -1,0 +1,111 @@
+{% extends "document.html" %}
+
+{% block body %}
+<div id="vApp" v-cloak :data-pending="pending" class="col-md-12">
+    <div
+        class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div class="d-flex align-items-start">
+            {% include 'admin/form/form-title.html' %}
+        </div>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
+                <a href="/admin/forms/{{form.id}}/delete" class="btn btn-sm btn-outline-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        {% include 'admin/form/form-tabs.html' %}
+    </div>
+
+    <div class="tab-content p-3">
+        {% include 'parts/toaster2.html' %}
+
+        <div class="custom-control custom-switch mb-3">
+            <input @change="activeChange" v-model="active" name="active" type="checkbox" class="custom-control-input" id="active">
+            <label class="custom-control-label" for="active">Accept Responses</label>
+        </div>
+
+        <div class="form-group">
+            <label for="link">Link of Form</label>
+            <div class="input-group">
+                <input ref="inputUrl" type="text" readonly class="form-control" value="{{CONFIG.app.url}}/survey/{{form.uniqueKey}}" />
+                <div class="input-group-append">
+                    <button @click.prevent="copyLink" class="copy-link btn btn-outline-primary" type="button">Copy </button>
+                </div>
+            </div>
+        </div>
+        <div class="text-center">
+            <a target="_blank" href="{{CONFIG.app.url}}/survey/{{form.uniqueKey}}" class="btn btn-success">View</a>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script src="{{app.url}}/js/vuejs-toaster.js"></script>
+<script>
+    const active = {{form.active|default(false, true)|stringify|safe}}
+    const acsrf = '{{acsrf}}'
+    
+    const vApp = new Vue({
+        el: '#vApp',
+        delimiters: ["${", "}"],
+        mixins: [
+            window.vueJsToastMixin
+        ],
+        data: {
+            pending: false,
+            active: active,
+        },
+        mounted: function () {
+            const me = this;
+        },
+        methods: {
+            copyLink: async function() {
+                const me = this
+                me.$refs.inputUrl.select()
+                document.execCommand('copy')
+                me.showToast('Success', 'Link copied to clipboard.')
+            },
+            activeChange: async function() {
+                const me = this
+
+                try {
+                    me.pending = true
+                    let response = await fetch(`/admin/forms/{{form.id}}`, {
+                        method: 'PATCH',
+                        body: JSON.stringify({
+                            acsrf: acsrf,
+                            active: me.active
+                        }),
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    if (!response.ok) {
+                        throw new Error(await response.text())
+                    }
+                    let responseText = await response.text()
+                    // console.log(responseText)
+                    // jQuery('.toast').toast('show')
+                    // me.ok = responseText
+                    me.showToast('Success', responseText)
+                    me.pending = false
+                } catch (error) {
+                    console.error(error)
+                    // me.error = error
+                    // jQuery('.toast').toast('show')
+                    me.showToast('Error', error)
+                } finally {
+                    me.pending = false
+
+                }
+            },
+        }
+
+    });
+</script>
+{% endblock %}
