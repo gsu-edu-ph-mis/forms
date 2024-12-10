@@ -1,7 +1,7 @@
 {% extends "document-public copy.html" %}
 
 {% block body %}
-<div class="col-md-10 col-xl-7 p-3 m-auto">
+<div class="col-md-10 col-xl-8 p-3 m-auto">
     <div id="vApp" v-cloak class="tab-content p-4" style="border-radius: 10px;">
         <form ref="form" v-on:submit.prevent="onSubmit" action="/survey/{{form.uniqueKey}}" method="POST" class="form-default">
             <h1 class="h3 text-center mt-3 mb-5">{{form.name}}</h1>
