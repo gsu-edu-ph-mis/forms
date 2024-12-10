@@ -9,11 +9,11 @@
 [Unit]
 Description=Forms
 
-# Requires the mongod service to run first
-# Requires=After=mongod.service
-
 [Service]
-ExecStart=/usr/bin/node /home/ubuntu/forms/index.js
+ExecStart=/home/ubuntu/.nvm/versions/node/v20.14.0/bin/node /home/ubuntu/forms/index.js
+
+# Required on some systems
+WorkingDirectory=/home/ubuntu/forms
 
 # Restart service after 10 seconds if node service crashes
 Restart=always
