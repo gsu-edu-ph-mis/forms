@@ -1,0 +1,99 @@
+{%raw%}{% extends "document.html" %}{%endraw%}
+
+{%raw%}{% block body %}{%endraw%}
+<div id="vApp" v-cloak :data-pending="pending" class="col-md-12">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div class="d-flex align-items-start">
+            <h1 class="h4">Create {{modelSpaceCase}}</h1>
+        </div>
+    </div>
+    <div></div>
+    <div class="tab-content p-3">
+        {%raw%}{% include 'parts/flash.html' %}{%endraw%}
+        <!-- Create -->
+        <form ref="formMain" action="/{{baseRoute}}/{{modelUrlFriend}}s" @submit.prevent="onSubmit" class="bold-label" method="post">
+            <input type="hidden" name="acsrf" value="{% raw %}{{acsrf}}{% endraw %}">
+            {%- for key, field in fields %}
+                {%- if field.inputType === 'hidden' %}
+                    <input v-model="{{key}}" name="{{key}}" id="{{key}}" type="{{field.inputType}}" class="form-control">
+                {% else %}
+                    <div class="form-group" :data-error="errors.{{key}}" @click="errors.{{key}}=false">
+                        <label for="{{key}}">{{key|start_case}}</label>
+                        {% if field.inputType === 'select' %}
+                            <select v-model="{{key}}" name="{{key}}" id="{{key}}" class="form-control">
+                                {%- for option in field.values %}
+                                    <option value="{{option}}">{{option}}</option>
+                                {% endfor -%}
+                            </select>
+                        {%- else -%}
+                            <input v-model="{{key}}" name="{{key}}" id="{{key}}" type="{{field.inputType}}" class="form-control">
+                        {%- endif %}
+                    </div>
+                {% endif -%}
+            {% endfor -%}
+
+            <div class="form-group">
+                <button class="btn btn-primary">Save</button>
+            </div>
+        </form>
+        <!--  -->
+    </div>
+</div>
+{%raw%}{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script>
+    var acsrf = '{{acsrf}}';
+
+    var vApp = new Vue({
+        el: '#vApp',
+        delimiters: ["${", "}"],
+        mixins: [
+        ],
+{%endraw%}
+        data: {
+            pending: false,
+            {% for key, field in fields %}{{key}}: '',
+            {% endfor %}
+            errors: {
+                {% for key, field in fields %}{{key}}: false,
+                {% endfor %}
+            },
+        },
+        mounted: function () {
+            const me = this;
+            
+            // Uncomment to autofill test data
+            {% for key, field in fields %}// me.{{key}} = ''
+            {% endfor %}
+        },
+        computed: {
+
+        },
+        methods: {
+            onSubmit: function(){
+                const me = this;
+                try {
+                    {%- for key, field in fields %}
+                        {%- if not field.__optional %}
+                        {%- if field.inputType !== 'hidden' %}
+                        if(!me.{{key}}){
+                            me.errors.{{key}} = true
+                            throw new Error('{{key|start_case}} is required.')
+                        }
+                        {% endif -%}
+                        {% endif -%}
+                    {% endfor -%}
+                    me.$nextTick(function(){
+                        me.$refs.formMain.submit()
+                    })
+                } catch (err) {
+                    console.error(err)
+                    alert(err.message)
+                }
+            }
+        }
+{%raw%}
+    });
+</script>
+{% endblock %}{%endraw%}

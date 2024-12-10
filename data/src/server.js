@@ -8,6 +8,7 @@
     const bodyParser = require('body-parser')
     const cookieParser = require('cookie-parser')
     const moment = require('moment')
+    const methodOverride = require('method-override')
 
     //// Modules
     const db = require('./db-connect')
@@ -39,6 +40,7 @@
     app.set('x-powered-by', false);
 
     //// Middlewares
+
     // Assign view variables once - on app start
     app.use(middlewares.once);
 
@@ -54,6 +56,9 @@
         limit: '50mb',
         extended: true
     }));
+
+    // Extend form method to support put and delete
+    app.use(methodOverride('_method'))
 
     // Cookies
     app.use(cookieParser());

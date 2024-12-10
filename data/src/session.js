@@ -10,7 +10,7 @@ module.exports = (database) => {
     return session({
         name: CONFIG.session.name,
         store: new SessionStore({
-            db: database,
+            db: database, // Table name is Sessions
         }),
         secret: CRED.session.secret,
         cookie: CONFIG.session.cookie,

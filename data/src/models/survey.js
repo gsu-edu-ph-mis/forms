@@ -8,7 +8,7 @@ const { DataTypes } = require('sequelize');
 module.exports = (modelName, sequelize) => {
     return sequelize.define(modelName, {
         formId: {
-            type: DataTypes.NUMBER
+            type: DataTypes.INTEGER
         },
         evaluatee: {
             type: DataTypes.STRING
@@ -32,7 +32,7 @@ module.exports = (modelName, sequelize) => {
             type: DataTypes.STRING
         },
         evaluatorYearLevel: {
-            type: DataTypes.NUMBER // 1,2,3,4
+            type: DataTypes.INTEGER // 1,2,3,4
         },
         evaluatorSection: {
             type: DataTypes.STRING // A,B
@@ -44,64 +44,64 @@ module.exports = (modelName, sequelize) => {
             type: DataTypes.STRING // Acad rank of person being evaluated
         },
         a1: {
-            type: DataTypes.NUMBER
+            type: DataTypes.INTEGER
         },
         a2: {
-            type: DataTypes.NUMBER
+            type: DataTypes.INTEGER
         },
         a3: {
-            type: DataTypes.NUMBER
+            type: DataTypes.INTEGER
         },
         a4: {
-            type: DataTypes.NUMBER
+            type: DataTypes.INTEGER
         },
         a5: {
-            type: DataTypes.NUMBER
+            type: DataTypes.INTEGER
         },
         b1: {
-            type: DataTypes.NUMBER
+            type: DataTypes.INTEGER
         },
         b2: {
-            type: DataTypes.NUMBER
+            type: DataTypes.INTEGER
         },
         b3: {
-            type: DataTypes.NUMBER
+            type: DataTypes.INTEGER
         },
         b4: {
-            type: DataTypes.NUMBER
+            type: DataTypes.INTEGER
         },
         b5: {
-            type: DataTypes.NUMBER
+            type: DataTypes.INTEGER
         },
         c1: {
-            type: DataTypes.NUMBER
+            type: DataTypes.INTEGER
         },
         c2: {
-            type: DataTypes.NUMBER
+            type: DataTypes.INTEGER
         },
         c3: {
-            type: DataTypes.NUMBER
+            type: DataTypes.INTEGER
         },
         c4: {
-            type: DataTypes.NUMBER
+            type: DataTypes.INTEGER
         },
         c5: {
-            type: DataTypes.NUMBER
+            type: DataTypes.INTEGER
         },
         d1: {
-            type: DataTypes.NUMBER
+            type: DataTypes.INTEGER
         },
         d2: {
-            type: DataTypes.NUMBER
+            type: DataTypes.INTEGER
         },
         d3: {
-            type: DataTypes.NUMBER
+            type: DataTypes.INTEGER
         },
         d4: {
-            type: DataTypes.NUMBER
+            type: DataTypes.INTEGER
         },
         d5: {
-            type: DataTypes.NUMBER
+            type: DataTypes.INTEGER
         },
     }, {
         // Other model options go here

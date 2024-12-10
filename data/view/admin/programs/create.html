@@ -1,0 +1,141 @@
+{% extends "document.html" %}
+
+{% block body %}
+<div id="vApp" v-cloak :data-pending="pending" class="col-md-12">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div class="d-flex align-items-start">
+            <h1 class="h4">Create Program</h1>
+        </div>
+    </div>
+    <div></div>
+    <div class="tab-content p-3">
+        {% include 'parts/flash.html' %}
+        <!-- Create -->
+        <form ref="formMain" action="/admin/programs" @submit.prevent="onSubmit" class="bold-label" method="post">
+            <input type="hidden" name="acsrf" value="{{acsrf}}">
+            <div class="form-group" :data-error="errors.name" @click="errors.name=false">
+                <label for="name">Name <span class="text-danger">*</span></label>
+                <input v-model="name" name="name" id="name" type="text" class="form-control">
+            </div>
+        
+            <div class="form-group" :data-error="errors.code" @click="errors.code=false">
+                <label for="code">Code <span class="text-danger">*</span></label>
+                <input v-model="code" name="code" id="code" type="text" class="form-control">
+            </div>
+        
+            <div class="form-group" :data-error="errors.campus" @click="errors.campus=false">
+                <label for="campus">Campus <span class="text-danger">*</span></label>
+                <select v-model="campus" name="campus" id="campus" class="form-control">
+                    <option value=""></option>
+                    <option value="BAT">BAT</option>
+                    <option value="MOS">MOS</option>
+                    <option value="SAL">SAL</option>
+                </select>
+            </div>
+        
+            <div class="form-group" :data-error="errors.active" @click="errors.active=false">
+                <div class="custom-control custom-switch mb-3">
+                    <input v-model="active" name="active" :value="true" type="checkbox" class="custom-control-input" id="active">
+                    <label class="custom-control-label" for="active">Active</label>
+                </div>
+            </div>
+        
+            <div class="form-group" :data-error="errors.collegeId" @click="errors.collegeId=false">
+                <label for="collegeId">College <span class="text-danger">*</span></label>
+                <select v-model="collegeId" name="collegeId" id="collegeId" class="form-control">
+                    <option value=""></option>
+                    {% for college in colleges %}
+                        <option value="{{college.id}}">{{college.name}} ({{college.code}})</option>
+                    {% endfor %}
+                </select>
+            </div>
+                
+            <div class="form-group">
+                <button class="btn btn-primary">Save</button>
+            </div>
+        </form>
+        <!--  -->
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script>
+    var acsrf = '{{acsrf}}';
+
+    var vApp = new Vue({
+        el: '#vApp',
+        delimiters: ["${", "}"],
+        mixins: [
+        ],
+
+        data: {
+            pending: false,
+            name: '',
+            code: '',
+            campus: '',
+            active: '',
+            collegeId: '',
+            createdBy: '',
+            
+            errors: {
+                name: false,
+                code: false,
+                campus: false,
+                active: false,
+                collegeId: false,
+                createdBy: false,
+                
+            },
+        },
+        mounted: function () {
+            const me = this;
+            
+            // Uncomment to autofill test data
+            // me.name = ''
+            // me.code = ''
+            // me.campus = ''
+            // me.active = ''
+            // me.collegeId = ''
+            // me.createdBy = ''
+            
+        },
+        computed: {
+
+        },
+        methods: {
+            onSubmit: function(){
+                const me = this;
+                try {
+                    if(!me.name){
+                        me.errors.name = true
+                        throw new Error('Name is required.')
+                    }
+                    
+                    if(!me.code){
+                        me.errors.code = true
+                        throw new Error('Code is required.')
+                    }
+
+                    if(!me.campus){
+                        me.errors.campus = true
+                        throw new Error('Campus is required.')
+                    }
+                    
+                    if(!me.collegeId){
+                        me.errors.collegeId = true
+                        throw new Error('College Id is required.')
+                    }
+                    me.$nextTick(function(){
+                        me.$refs.formMain.submit()
+                    })
+                } catch (err) {
+                    console.error(err)
+                    alert(err.message)
+                }
+            }
+        }
+
+    });
+</script>
+{% endblock %}

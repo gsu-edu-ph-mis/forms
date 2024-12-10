@@ -1,231 +1,218 @@
 {% extends "document-public.html" %}
 
 {% block body %}
-<div class="col-md-10 p-3 m-auto">
-    <div id="vApp" v-cloak class="tab-content p-4">
-        <form ref="form" v-on:submit.prevent="onSubmit" action="/survey/{{form.uniqueKey}}" method="POST" class="form-default">
-            <h1 class="h2 text-center mb-5">{{form.name}}</h1>
-            <div id="carouselForms" data-interval="false" class="carousel slide">
-                <div class="carousel-inner">
-                    
-                    <div class="carousel-item active">
-                        {# 1 #}
-                        <div class="mb-4" style="white-space: pre-wrap;">{{form.description}}</div>
-                        <h2 class="h3 text-center mb-5">Select a Faculty to Evaluate:</h2>
-                        <div class="evaluatee-selections row">
-                            <div v-for="evaluatee in evaluatees" class="col-6 col-md-4 col-xl-2 text-center">
-                                <div v-bind:data-selected="isSelected(evaluatee)" class="evaluatee-selection m-auto">
+<div class="col-md-10 col-xl-7 p-3 m-auto">
+    <div id="vApp" v-cloak class="survey-form p-4">
+        <form ref="form" v-on:submit.prevent="onSubmit" action="/survey/{{form.uniqueKey}}" method="POST">
+            <h1 class="h4 mb-5">{{form.name}}</h1>
+            <div v-show="page==0">
+                <div class="survey-description mb-5" >{{form.description}}</div>
+                <div class="evaluatee-list">
+                    <template v-for="evaluatee in evaluatees" class="evaluatee">
+                        <div v-bind:data-selected="isSelected(evaluatee)" class="evaluatee-selectionx">
+                            <div class="form-row">
+                                <div class="col-md-3">
                                     <div class="photo">
-                                        <a v-on:click="select($event, evaluatee)" href="#"><img v-bind:src="`/images/officials/${evaluatee.photo}`" alt="photo" width="150" height="150" /></a>
+                                        <template v-if="evaluatee.photo">
+                                            <img v-bind:src="evaluatee.photo" alt="photo" width="150" height="150" />
+                                        </template>
+                                        <template v-else>
+                                            <template v-if="evaluatee.gender === 'F'">
+                                                <img src="/images/officials/yyy.jpg" alt="photo" width="150" height="150" />
+                                            </template>
+                                            <template v-else>
+                                                <img src="/images/officials/xxx.jpg" alt="photo" width="150" height="150" />
+                                            </template>
+                                        </template>
                                     </div>
-                                    <div class="details">
-                                        <h3 class="name">${evaluatee.name}</h3>
-                                    </div>
+                                </div>
+                                <div class="col-md-9 details">
+                                    <h3 class="name">${evaluatee.prefix} ${evaluatee.firstName} ${evaluatee.lastName}</h3>
+                                    <button v-on:click.prevent="selectAndNext($event, evaluatee)" class="btn btn-primary" type="button">Evaluate</button>
                                 </div>
                             </div>
                         </div>
-                        <div class="p-3 bg-light d-flex justify-content-between">
-                            <div></div>
-                            <button v-on:click="goto(1)" v-bind:disabled="isDisabled" type="button" class=" btn btn-primary">${btnEvaluate} &raquo;</button>
+                    </template>
+                </div>
+            </div>
+            <div v-show="page==1">
+                <div class="form-row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="lastName">Last Name <strong class="text-danger">*</strong></label>
+                            <input v-model="lastName" type="text" id="lastName" class="form-control" placeholder="Cruz">
                         </div>
-                        {# 1 #}
                     </div>
-                   
-                    <div class="carousel-item">
-                        {# 2 #}
-                        <h2 class="h4 mb-4">Instruction: Please evaluate ${name} using the scale below.</h2>
-                        <div class="table-responsive">
-                            <table class="table table-sm mb-4">
-                                <tr>
-                                    <th class="text-center">Scale</th>
-                                    <th class="text-center">Descriptive</th>
-                                    <th class="text-center">Qualitative</th>
-                                </tr>
-                                <tr>
-                                    <td class="text-center">5</td>
-                                    <td class="text-center">Outstanding</td>
-                                    <td>The performance almost always exceeds the job requirements. The faculty is an exceptional model.</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-center">4</td>
-                                    <td class="text-center">Very Satisfactory</td>
-                                    <td>The performance meets and often exceeds the job requirements.</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-center">3</td>
-                                    <td class="text-center">Satisfactory</td>
-                                    <td>The performance meets the job requirements.</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-center">2</td>
-                                    <td class="text-center">Fair</td>
-                                    <td>The performance needs some development to meet job requirements.</td>
-                                </tr>
-                                <tr>
-                                    <td class="text-center">1</td>
-                                    <td class="text-center">Poor</td>
-                                    <td>The facultyfails to meet job requirements.</td>
-                                </tr>
-                            </table>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="middleName">Middle Name</label>
+                            <input v-model="middleName" type="text" id="middleName" class="form-control">
                         </div>
-                        {% for letter, q in questionGroups %}
-                            <div class="mb-5">
-                                <h2 class="h4 mb-4">{{letter}}. {{q.title}}</h2>
-                                {% for question in q.questions %}
-                                    <div class="form-group row">
-                                        {% set qIndex = letter + loop.index %}
-                                        <label for="{{qIndex}}" class="col-md-8">{{loop.index}}. {{question}}</label>
-                                        <div class="col-md-4 align-items-end">
-                                            {% for x in [5,4,3,2,1] %}
-                                                <div class="custom-control custom-radio custom-control-inline">
-                                                    <input v-model="answers.{{qIndex}}" type="radio" id="{{qIndex}}{{x}}" name="{{qIndex}}" value="{{x}}" class="custom-control-input">
-                                                    <label class="custom-control-label" for="{{qIndex}}{{x}}">{{x}}</label>
-                                                </div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="firstName">First Name <strong class="text-danger">*</strong></label>
+                            <input v-model="firstName" type="text" id="firstName" class="form-control" placeholder="Juan">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="suffix">Suffix</label>
+                            <select v-model="suffix" name="suffix" id="suffix" class="form-control">
+                                <option value=""></option>
+                                {% for suffix in CONFIG.suffixes %}
+                                <option value="{{suffix}}">{{suffix}}</option>
                                 {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="evaluatorEmail">Your Email</label>
+                    <input v-model="evaluatorEmail" type="text" id="evaluatorEmail" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="evaluatorType">I am evaluating </label>
+                    <select v-model="evaluatorType" name="evaluatorType" id="evaluatorType" class="form-control">
+                        <option></option>
+                        <option value="student">as a Student.</option>
+                        <option value="supervisor">as the Supervisor.</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="evaluatorCourse">Your Course</label>
+                    <select v-model="evaluatorCourse" name="evaluatorCourse" id="evaluatorCourse" class="form-control">
+                        <option></option>
+                        {% for program in programs %}
+                            <option>{{program.name}} ({{program.code}})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="evaluatorYearLevel">Year Level</label>
+                    <select v-model="evaluatorYearLevel" name="evaluatorYearLevel" id="evaluatorYearLevel" class="form-control">
+                        <option></option>
+                        <option>First Year</option>
+                        <option>Second Year</option>
+                        <option>Third Year</option>
+                        <option>Fourth Year</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="evaluatorSection">Your Section</label>
+                    <select v-model="evaluatorSection" name="evaluatorSection" id="evaluatorSection" class="form-control">
+                        <option></option>
+                        {% for section in ['A','B','C','D','E','F','G'] -%}
+                            <option>{{section}}</option>
+                        {%- endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="evaluatorSubject">Your Subject</label>
+                    <input v-model="evaluatorSubject" type="text" id="evaluatorSubject" class="form-control">
+                </div>
+                <div class="p-3 bg-light d-flex justify-content-between">
+                    <button v-on:click="goto(0)" type="button" class=" btn btn-light">&laquo; Back</button>
+                    <button v-on:click="goto(2)" type="button" class=" btn btn-primary">Next &raquo;</button>
+                </div>
+            </div>
+            <div v-show="page==2">
+                <h2 class="h4 mb-4">Instruction: Please evaluate ${name} using the scale below.</h2>
+                <div class="table-responsive">
+                    <table class="table table-sm mb-4">
+                        <tr>
+                            <th class="text-center">Scale</th>
+                            <th class="text-center">Descriptive</th>
+                            <th class="text-center">Qualitative</th>
+                        </tr>
+                        <tr>
+                            <td class="text-center">5</td>
+                            <td class="text-center">Outstanding</td>
+                            <td>The performance almost always exceeds the job requirements. The faculty is an exceptional model.</td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">4</td>
+                            <td class="text-center">Very Satisfactory</td>
+                            <td>The performance meets and often exceeds the job requirements.</td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">3</td>
+                            <td class="text-center">Satisfactory</td>
+                            <td>The performance meets the job requirements.</td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">2</td>
+                            <td class="text-center">Fair</td>
+                            <td>The performance needs some development to meet job requirements.</td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">1</td>
+                            <td class="text-center">Poor</td>
+                            <td>The faculty fails to meet job requirements.</td>
+                        </tr>
+                    </table>
+                </div>
+                {% for letter, q in questionGroups %}
+                    <div class="mb-5">
+                        <h2 class="h4 mb-4">{{letter}}. {{q.title}}</h2>
+                        {% for question in q.questions %}
+                            <div class="form-group row">
+                                {% set qIndex = letter + loop.index %}
+                                <label for="{{qIndex}}" class="col-md-8">{{loop.index}}. {{question}}</label>
+                                <div class="col-md-4 align-items-end">
+                                    {% for x in [5,4,3,2,1] %}
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input v-model="answers.{{qIndex}}" type="radio" id="{{qIndex}}{{x}}" name="{{qIndex}}" value="{{x}}" class="custom-control-input">
+                                            <label class="custom-control-label" for="{{qIndex}}{{x}}">{{x}}</label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
                             </div>
                         {% endfor %}
-                        <!--  -->
-                        <div class="form-group row">
-                            <label for="comments" class="col-sm-6 col-form-label">Aside from the above-mentioned criteria, what are your comments or suggestions?</label>
-                            <div class="col-sm-6">
-                                <textarea name="comments" id="comments" cols="30" rows="10" class="form-control"></textarea>
-                            </div>
-                        </div>
-                        <div class="p-3 bg-light d-flex justify-content-between">
-                            <button v-on:click="goto(0)" type="button" class=" btn btn-light">&laquo; Back</button>
-                            <button v-on:click="goto(2)" type="button" class=" btn btn-primary">Next &raquo;</button>
-                        </div>
-                        {# 2 #}
                     </div>
-                    <div class="carousel-item">
-                        {# 3 #}
-                        <h2 class="h2 mb-3">Evaluator</h2>
-                        <div class="form-group row">
-                            <label for="evaluatorType" class="col-sm-3 col-form-label">I am evaluating:</label>
-                            <div class="col-sm-9">
-                                <select v-model="evaluatorType" name="evaluatorType" id="evaluatorType" class="form-control">
-                                    <option></option>
-                                    <option value="self">My Self</option>
-                                    <option value="peer">A Peer</option>
-                                    <option value="student">As a Student</option>
-                                    <option value="supervisor">As the Supervisor</option>
-                                </select>
-                                <small class="invalid-feedback">${getError('evaluatorType')}</small>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="evaluatorEmail" class="col-sm-3 col-form-label">My Email</label>
-                            <div class="col-sm-9">
-                                <input v-model="evaluatorEmail" name="evaluatorEmail" id="evaluatorEmail" type="email" class="form-control">
-                                <small class="invalid-feedback">${getError('evaluatorEmail')}</small>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="evaluatorName" class="col-sm-3 col-form-label">My Name</label>
-                            <div class="col-sm-9">
-                                <input v-model="evaluatorName" name="evaluatorName" id="evaluatorName" type="text" class="form-control" placeholder="Last Name, First Name, Middle Name">
-                                <small class="invalid-feedback">${getError('evaluatorName')}</small>
-                            </div>
-                        </div>
-                        <div v-if="evaluatorType === 'student'"  class="form-group row">
-                            <div class="col-sm-3 col-form-label">
-                                <label for="evaluatorSubject" class="mb-0">My Subject</label> <br>
-                                <small>(under ${name})</small>
-                            </div>
-                            <div class="col-sm-9">
-                                <input v-model="evaluatorSubject" name="evaluatorSubject" id="evaluatorSubject" type="text" class="form-control" placeholder="">
-                                <small class="invalid-feedback">${getError('evaluatorSubject')}</small>
-                            </div>
-                        </div>
-                        <div v-if="evaluatorType !== 'student'"  class="form-group row">
-                            <label for="evaluatorPosition" class="col-sm-3 col-form-label">My Position</label>
-                            <div class="col-sm-9">
-                                <input v-model="evaluatorPosition" name="evaluatorPosition" id="evaluatorPosition" type="text" class="form-control" placeholder="">
-                                <small class="invalid-feedback">${getError('evaluatorPosition')}</small>
-                            </div>
-                        </div>
-                        <div v-if="evaluatorType === 'student'" class="form-group row">
-                            <label for="evaluatorCourse" class="col-sm-3 col-form-label">My Course</label>
-                            <div class="col-sm-9">
-                                <select v-model="evaluatorCourse" name="evaluatorCourse" id="evaluatorCourse" class="form-control">
-                                    <option></option>
-                                    <option>BACHELOR OF ELEMENTARY EDUCATION (Major in General Education)</option>
-                                    <option>BACHELOR OF SECONDARY EDUCATION (Major in English)</option>
-                                    <option>BACHELOR OF SECONDARY EDUCATION (Major in Filipino)</option>
-                                    <option>BACHELOR OF SECONDARY EDUCATION (Major in Mathematics)</option>
-                                    <option>BACHELOR OF SECONDARY EDUCATION (Major in Science)</option>
-                                    <option>BACHELOR OF SECONDARY EDUCATION (Major in Social Studies)</option>
-                                    <option>BACHELOR OF TECHNOLOGY AND LIVELIHOOD EDUCATION (Major in Home Economics and Livelihood Education)</option>
-                                </select>
-                                <small class="invalid-feedback">${getError('evaluatorCourse')}</small>
-                            </div>
-                        </div>
-                        <div v-if="evaluatorType === 'student'" class="form-group row">
-                            <label for="evaluatorYearLevel" class="col-sm-3 col-form-label">My Year Level</label>
-                            <div class="col-sm-9">
-                                <select v-model="evaluatorYearLevel" name="evaluatorYearLevel" id="evaluatorYearLevel" class="form-control">
-                                    <option></option>
-                                    <option>First Year</option>
-                                    <option>Second Year</option>
-                                    <option>Third Year</option>
-                                    <option>Fourth Year</option>
-                                </select>
-                                <small class="invalid-feedback">${getError('evaluatorYearLevel')}</small>
-                            </div>
-                        </div>
-                        <div v-if="evaluatorType === 'student'" class="form-group row">
-                            <label for="evaluatorSection" class="col-sm-3 col-form-label">My Section</label>
-                            <div class="col-sm-9">
-                                <select v-model="evaluatorSection" name="evaluatorSection" id="evaluatorSection" class="form-control">
-                                    <option></option>
-                                    <option>A</option>
-                                    <option>B</option>
-                                </select>
-                                <small class="invalid-feedback">${getError('evaluatorSection')}</small>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="evaluatorSignature" class="col-sm-3 col-form-label">My Signature</label>
-                            <div class="col-sm-9">
-                                <div id="signature-pad" style="background: #ccc; padding:5px;">
-                                    <div>Use fingertips, mouse or tablet pen to sign</div>
-                                    <div style="background: #fff; margin-bottom: 5px;">
-                                        <canvas style="cursor: crosshair; box-sizing:content-box; width: 100%; height: 300px;"></canvas>
-                                    </div> 
-                                    <div class="form-row">
-                                        <div class="col-6">
-                                            <button v-on:click="clearSignature" class="btn btn-link text-danger btn-sm" type="button" id="clear-signature">Erase</button>
-                                        </div>
-                                        <div class="col-6 text-right">
-                                            
-                                        </div>
-                                    </div>
+                {% endfor %}
+                <!--  -->
+                <div class="form-group row">
+                    <label for="comments" class="col-sm-6 col-form-label">Aside from the above-mentioned criteria, what are your comments or suggestions?</label>
+                    <div class="col-sm-6">
+                        <textarea name="comments" id="comments" cols="30" rows="10" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="evaluatorSignature" class="col-sm-3 col-form-label">My Signature</label>
+                    <div class="col-sm-9">
+                        <div id="signature-pad" style="background: #ccc; padding:5px;">
+                            <div>Use fingertips, mouse or tablet pen to sign</div>
+                            <div style="background: #fff; margin-bottom: 5px;">
+                                <canvas style="cursor: crosshair; box-sizing:content-box; width: 100%; height: 300px;"></canvas>
+                            </div> 
+                            <div class="form-row">
+                                <div class="col-6">
+                                    <button v-on:click="clearSignature" class="btn btn-link text-danger btn-sm" type="button" id="clear-signature">Erase</button>
+                                </div>
+                                <div class="col-6 text-right">
+                                    
                                 </div>
                             </div>
                         </div>
-                        <div class="p-3 bg-light row">
-                            <div class="col-3 col-md-6">
-                                <button v-on:click="goto(1)" type="button" class=" btn btn-light">&laquo; Back</button>
-                            </div>
-                            <div class="col-9 col-md-6">
-                                <div class="d-flex align-items-center justify-content-end">
-                                    <div class="mr-3">By signing you agree with our <a target="_blank" href="/data-privacy">Data Privacy</a> statement</div>
-                                    <div>
-                                        <button v-on:click="saveSignature" class="btn btn-primary" type="button" id="save-signature">Sign and Submit</button>
-                                    </div> 
-                                </div> 
-                            </div>
-                        </div>
-                        
-                        {# 3 #}
+                    </div>
+                </div>
+                <div class="p-3 bg-light row">
+                    <div class="col-3 col-md-6">
+                        <button v-on:click="goto(1)" type="button" class=" btn btn-light">&laquo; Back</button>
+                    </div>
+                    <div class="col-9 col-md-6">
+                        <div class="d-flex align-items-center justify-content-end">
+                            <div class="mr-3">By signing you agree with our <a target="_blank" href="/data-privacy">Data Privacy</a> statement</div>
+                            <div>
+                                <button v-on:click="saveSignature" class="btn btn-primary" type="button" id="save-signature">Sign and Submit</button>
+                            </div> 
+                        </div> 
                     </div>
                 </div>
             </div>
-            <input v-model="evaluatee" type="hidden" name="evaluatee">
-            <textarea v-model="evaluatorSignature" name="evaluatorSignature" id="evaluatorSignature" style="display:none; visibility: hidden" cols="30" rows="10"></textarea>
         </form>
     </div>
 </div>
@@ -240,11 +227,7 @@
     var vApp = new Vue({
         el: '#vApp',
         delimiters: ["${", "}"],
-        mixins: [
-            window.vuelidate.validationMixin,
-            window.vuelidateExtendMixin,
-        ],
-       
+        mixins: [],
         data: {
             page: 0,
             formTitle: '{{formTitle|default("COLLEGE OF TEACHER EDUCATION ONLINE EVALUATION ON TEACHING EFFECTIVENESS", true)}}',
@@ -255,6 +238,10 @@
             answers: {{answers|default({}, true)|stringify|safe}},
             evaluatee: '',
             signaturePad: null,
+            firstName: '',
+            middleName: '',
+            lastName: '',
+            suffix: '',
             evaluatorType: '',
             evaluatorEmail: '',
             evaluatorName: '',
@@ -265,42 +252,7 @@
             evaluatorSection: '',
             evaluatorSignature: '',
         },
-        validations: {
-            evaluatorType: {
-                required: window.validators.required
-            },
-            evaluatorEmail: {
-                required: window.validators.required
-            },
-            evaluatorName: {
-                required: window.validators.required
-            },
-            evaluatorPosition: {
-                required: window.validators.requiredIf(function(){
-                    return this.evaluatorType !== 'student';
-                })
-            },
-            evaluatorSubject: {
-                required: window.validators.requiredIf(function(){
-                    return this.evaluatorType === 'student';
-                })
-            },
-            evaluatorCourse: {
-                required: window.validators.requiredIf(function(){
-                    return this.evaluatorType === 'student';
-                })
-            },
-            evaluatorYearLevel: {
-                required: window.validators.requiredIf(function(){
-                    return this.evaluatorType === 'student';
-                })
-            },
-            evaluatorSection: {
-                required: window.validators.requiredIf(function(){
-                    return this.evaluatorType === 'student';
-                })
-            },
-        },
+       
         computed: {
             name: function(){
                 let me = this;
@@ -308,7 +260,7 @@
                     return e.id === me.evaluatee
                 })
                 if(s){
-                    return s.name
+                    return `${s.prefix} ${s.firstName} ${s.lastName}`
                 }
                 return ""
             },
@@ -323,73 +275,88 @@
             },
         },
         mounted: function(){
-            var canvas = document.querySelector("#signature-pad canvas");
-            var signaturePad = new SignaturePad(canvas, {
-                // It's Necessary to use an opaque color when saving image as JPEG;
-                // this option can be omitted if only saving as PNG or SVG
-                backgroundColor: 'rgba(255, 255, 255, 0)',
-                penColor: "blue"
-            });
-            this.signaturePad = signaturePad;
+            const me = this
 
-            // Adjust canvas coordinate space taking into account pixel ratio,
-            // to make it look crisp on mobile devices.
-            // This also causes canvas to be cleared.
-            function resizeCanvas() {
-                // When zoomed out to less than 100%, for some very strange reason,
-                // some browsers report devicePixelRatio as less than 1
-                // and only part of the canvas is cleared then.
-                var ratio =  Math.max(window.devicePixelRatio || 1, 1);
+            me.lastName = 'Amarilla'
+            me.middleName = ''
+            me.firstName = 'Nico'
+            me.evaluatorEmail = 'nico.amarilla@gsu.edu.ph'
+            me.evaluatorType = 'student'
+            me.evaluatorYearLevel = 'First Year'
+            me.evaluatorSection = 'A'
+            me.evaluatorCourse = 'Bachelor of Elementary Education (BSEEd)'
+            me.evaluatorSubject = 'Philosophy 101'
 
-                // This part causes the canvas to be cleared
-                canvas.width = canvas.offsetWidth * ratio;
-                canvas.height = canvas.offsetHeight * ratio;
-                canvas.getContext("2d").scale(ratio, ratio);
-
-                // This library does not listen for canvas changes, so after the canvas is automatically
-                // cleared by the browser, SignaturePad#isEmpty might still return false, even though the
-                // canvas looks empty, because the internal data of this library wasn't cleared. To make sure
-                // that the state of this library is consistent with visual state of the canvas, you
-                // have to clear it manually.
-                signaturePad.clear();
-            }
-
-            // On mobile devices it might make more sense to listen to orientation change,
-            // rather than window resize events.
-            window.addEventListener("resize", resizeCanvas);
-            resizeCanvas();
+           
             
-            {# this.goto(2) #}
-
-            {# this.evaluatee = 1
-            this.evaluatorType = 'self'
+            // this.goto(2)
+            var canvas = document.querySelector("#signature-pad canvas");
+            console.log(jQuery("#signature-pad canvas").is(':visible'))
+            this.evaluatee = 1
+            this.evaluatorType = 'student'
             this.evaluatorEmail = 'amarillanico@gmail.com'
             this.evaluatorName = 'Amarilla, Nico, Gayapa'
             this.evaluatorCourse = 'BACHELOR OF ELEMENTARY EDUCATION (Major in General Education)'
             this.evaluatorYearLevel = 'First Year'
-            this.evaluatorSection = 'A' #}
+            this.evaluatorSection = 'A' 
 
         },
         watch: {
             page: function (newPage, oldPage) {
-                var me = this;
-                
+                const me = this;
+                if (newPage === 1) {
 
-                if(newPage === 1) {
-                    
+                } else if (newPage === 2) {
+                    let x = setInterval(() => {
+                        let isVisible = jQuery("#signature-pad canvas").is(':visible')
+                        if (isVisible) clearInterval(x)
 
-                } else if(newPage === 2) {
+                        if(!me.signaturePad){
+                            const canvas = document.querySelector("#signature-pad canvas");
+                            me.signaturePad = new SignaturePad(canvas, {
+                                // It's Necessary to use an opaque color when saving image as JPEG;
+                                // this option can be omitted if only saving as PNG or SVG
+                                backgroundColor: 'rgba(255, 255, 255, 0)',
+                                penColor: "blue"
+                            });
 
-                    
+                            // Adjust canvas coordinate space taking into account pixel ratio,
+                            // to make it look crisp on mobile devices.
+                            // This also causes canvas to be cleared.
+                            function resizeCanvas() {
+                                // When zoomed out to less than 100%, for some very strange reason,
+                                // some browsers report devicePixelRatio as less than 1
+                                // and only part of the canvas is cleared then.
+                                const ratio = Math.max(window.devicePixelRatio || 1, 1);
 
-                } else if(newPage === 3) {
-                   
+                                // This part causes the canvas to be cleared
+                                canvas.width = canvas.offsetWidth * ratio;
+                                canvas.height = canvas.offsetHeight * ratio;
+                                canvas.getContext("2d").scale(ratio, ratio);
+
+                                // This library does not listen for canvas changes, so after the canvas is automatically
+                                // cleared by the browser, SignaturePad#isEmpty might still return false, even though the
+                                // canvas looks empty, because the internal data of this library wasn't cleared. To make sure
+                                // that the state of this library is consistent with visual state of the canvas, you
+                                // have to clear it manually.
+                                me.signaturePad.clear();
+                            }
+
+                            // On mobile devices it might make more sense to listen to orientation change,
+                            // rather than window resize events.
+                            window.addEventListener("resize", resizeCanvas);
+                            resizeCanvas();
+                        }
+                    }, 100)
+
+                } else if (newPage === 3) {
+
                 }
 
-                jQuery('#carouselForms').carousel(newPage)
-                jQuery('html,body').animate({
-                    scrollTop: 0
-                }, 200, 'swing');
+                // jQuery('#carouselForms').carousel(newPage)
+                // jQuery('html,body').animate({
+                //     scrollTop: 0
+                // }, 200, 'swing');
             }
         },
         methods: {
@@ -435,19 +402,30 @@
 
                 this.evaluatee = evaluatee.id
             },
+            selectAndNext: function(e, evaluatee){
+                e.preventDefault()
+
+                this.evaluatee = evaluatee.id
+                this.goto(1)
+            },
             isSelected: function(evaluatee){
                 return evaluatee.id == this.evaluatee
             },
-            onSubmit: function(){
-                var me = this;
-              
-                me.$v.$touch()
-                if (me.$v.$error) {
-                    alert('Please correct the errors to continue.')
-                } else {
-                    me.$nextTick(function() {
-                        me.$refs.form.submit();
-                    });
+            onSubmit: function(e){
+                try {
+                    const me = this 
+
+                    if(_.get(e, 'submitter.id') === 'btnSubmit'){
+                        
+                        me.pending = true;
+                        me.$nextTick(function() {
+                            me.$refs.form.submit();
+                        });
+                    }
+                    
+                } catch (err) {
+                    console.error(err)
+                    alert(err.message)
                 }
             }
         }

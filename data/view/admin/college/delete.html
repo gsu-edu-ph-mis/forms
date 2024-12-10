@@ -1,0 +1,49 @@
+{% extends "document.html" %}
+
+{% block body %}
+<div id="vApp" v-cloak :data-pending="pending" class="col-md-12">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div class="d-flex align-items-start">
+            <h1 class="h4">Delete College</h1>
+        </div>
+    </div>
+    <div></div>
+    <div class="tab-content p-3">
+        <!-- Update -->
+        <form action="/admin/colleges/{{college.id}}?_method=delete" method="post">
+            <input type="hidden" name="acsrf" value="{{acsrf}}">
+            <p>Delete college #{{college.id}}?</p>
+            <div class="form-group">
+                <button class="btn btn-danger">Delete</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script>
+    var acsrf = '{{acsrf}}';
+
+    var vApp = new Vue({
+        el: '#vApp',
+        delimiters: ["${", "}"],
+        mixins: [
+        ],
+        data: {
+            pending: false,
+        },
+        mounted: function () {
+            const me = this;
+
+
+        },
+        computed: {
+
+        },
+        methods: {
+
+        }
+    });
+</script>
+{% endblock %}

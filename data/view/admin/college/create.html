@@ -1,0 +1,102 @@
+{% extends "document.html" %}
+
+{% block body %}
+<div id="vApp" v-cloak :data-pending="pending" class="col-md-12">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div class="d-flex align-items-start">
+            <h1 class="h4">Create College</h1>
+        </div>
+    </div>
+    <div></div>
+    <div class="tab-content p-3">
+        {% include 'parts/flash.html' %}
+        <!-- Create -->
+        <form ref="formMain" action="/admin/colleges" @submit.prevent="onSubmit" method="post" class="bold-label">
+            <input type="hidden" name="acsrf" value="{{acsrf}}">
+            <div class="form-group" :data-error="errors.name" @click="errors.name=false">
+                <label for="name">Name <span class="text-danger">*</span></label>
+                <input v-model="name" name="name" id="name" type="text" class="form-control">
+            </div>
+        
+            <div class="form-group" :data-error="errors.code" @click="errors.code=false">
+                <label for="code">Code <span class="text-danger">*</span></label>
+                <input v-model="code" name="code" id="code" type="text" class="form-control">
+            </div>
+
+            <div class="form-group" :data-error="errors.userId" @click="errors.userId=false">
+                <label for="userId">Dean <span class="text-danger">*</span></label>
+                <select v-model="userId" name="userId" id="userId" class="form-control">
+                    <option value=""></option>
+                    {% for user in deans %}
+                    <option value="{{user.id}}">{{user.firstName}} {{user.lastName}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <button class="btn btn-primary">Save</button>
+            </div>
+        </form>
+        <!--  -->
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script>
+    var acsrf = '{{acsrf}}';
+
+    var vApp = new Vue({
+        el: '#vApp',
+        delimiters: ["${", "}"],
+        mixins: [
+        ],
+
+        data: {
+            pending: false,
+            name: '',
+            code: '',
+            
+            errors: {
+                name: false,
+                code: false,
+                
+            },
+        },
+        mounted: function () {
+            const me = this;
+            
+            // Uncomment to autofill test data
+            // me.name = ''
+            // me.code = ''
+            
+        },
+        computed: {
+
+        },
+        methods: {
+            onSubmit: function(){
+                const me = this;
+                try {
+                        if(!me.name){
+                            me.errors.name = true
+                            throw new Error('Name is required.')
+                        }
+                        
+                        if(!me.code){
+                            me.errors.code = true
+                            throw new Error('Code is required.')
+                        }
+                        me.$nextTick(function(){
+                        me.$refs.formMain.submit()
+                    })
+                } catch (err) {
+                    console.error(err)
+                    alert(err.message)
+                }
+            }
+        }
+
+    });
+</script>
+{% endblock %}

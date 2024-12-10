@@ -1,0 +1,52 @@
+{% extends "document.html" %}
+
+{% block body %}
+<div class="col-md-12">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div class="d-flex align-items-start">
+            <h1 class="h5 mb-0">All Forms</h1>
+        </div>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
+                <a href="/admin/forms/create" class="btn btn-sm btn-outline-primary">Create</a>
+            </div>
+        </div>
+    </div>
+   
+    <div class="tab-content p-3">
+        
+        {% include 'parts/flash.html' %}
+
+        {% if rows.length <= 0 %}
+
+            <div class="alert alert-info">No Form found.</div>
+
+        {% else %}
+        <div class="table-responsive">
+            <table class="table table-sm table-striped border mb-0">
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Academic Year</th>
+                    <th>Semester</th>
+                    <th>Creator</th>
+                    <th>&nbsp;</th>
+                </tr>
+                {% for row in rows -%}
+                    <tr>
+                        <td>{{loop.index}}</td>
+                        <td><a href="/admin/forms/{{row.id}}">{{row.name}}</a></td>
+                        <td>{{row.academicYear}}</td>
+                        <td>{{row.semester|replace(1,'1st')|replace(2,'2nd')|replace(3,'Summer')}}</td>
+                        <td>{{row.creator.username}}</td>
+                        <td>
+                            <a href="/admin/forms/{{row.id}}">Details</a>
+                        </td>
+                    </tr>
+                {%- endfor %}
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

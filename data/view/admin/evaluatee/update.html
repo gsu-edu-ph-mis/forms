@@ -1,0 +1,204 @@
+{% extends "document.html" %}
+
+{% block body %}
+<div id="vApp" v-cloak :data-pending="pending" class="col-md-12">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div class="d-flex align-items-start">
+            <h1 class="h4">Update Evaluatee</h1>
+        </div>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
+                <a href="/admin/evaluatees/{{evaluatee.id}}/delete" class="btn btn-sm btn-outline-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+
+    <div></div>
+    <div class="tab-content p-3">
+        {% include 'parts/flash.html' %}
+        <!-- Update -->
+        <form ref="formMain" action="?_method=put" @submit.prevent="onSubmit" method="post" class="bold-label">
+            <input type="hidden" name="acsrf" value="{{acsrf}}">
+            <input type="hidden" name="id" value="{{evaluatee.id}}">
+            <div class="form-row">
+                <div class="col-md-2">
+                    <div class="form-group" :data-error="errors.prefix" @click="errors.prefix=false">
+                        <label for="prefix">Prefix</label>
+                        <input v-model="prefix" name="prefix" id="prefix" type="text" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group" :data-error="errors.firstName" @click="errors.firstName=false">
+                        <label for="firstName">First Name <span class="text-danger">*</span></label>
+                        <input v-model="firstName" name="firstName" id="firstName" type="text" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group" :data-error="errors.middleName" @click="errors.middleName=false">
+                        <label for="middleName">Middle</label>
+                        <input v-model="middleName" name="middleName" id="middleName" type="text" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group" :data-error="errors.lastName" @click="errors.lastName=false">
+                        <label for="lastName">Last Name <span class="text-danger">*</span></label>
+                        <input v-model="lastName" name="lastName" id="lastName" type="text" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group" :data-error="errors.suffix" @click="errors.suffix=false">
+                        <label for="suffix">Suffix</label>
+                        <select v-model="suffix" name="suffix" id="suffix" class="form-control">
+                            <option value=""></option>
+                            <option value="Jr.">Jr.</option>
+                            <option value="II">II</option>
+                            <option value="III">III</option>
+                            <option value="IV">IV</option>
+                            <option value="V">V</option>
+                            <option value="Sr.">Sr.</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="form-group" :data-error="errors.position" @click="errors.position=false">
+                <label for="position">Position</label>
+                <input v-model="position" name="position" id="position" type="text" class="form-control">
+            </div>
+        
+            <div class="form-row">
+                <div class="col-md-6">
+                    <div class="form-group" :data-error="errors.gender" @click="errors.gender=false">
+                        <label for="gender">Gender</label>
+                        <select v-model="gender" name="gender" id="gender" class="form-control">
+                            <option value=""></option>
+                            <option value="F">Female</option>
+                            <option value="M">Male</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group" :data-error="errors.birthDate" @click="errors.birthDate=false">
+                        <label for="birthDate">Birth Date</label>
+                        <input v-model="birthDate" name="birthDate" id="birthDate" type="date" class="form-control">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group" :data-error="errors.photo" @click="errors.photo=false">
+                <label for="photo">Photo</label>
+                <div v-if="photo" class="text-center position-relative" style="max-width: 250px;">
+                    <button @click.prevent="photo=''" class="btn btn-danger" type="button" style="position: absolute; right: 10px; top: 10px">X</button>
+                    <img v-bind:src="photo" id="preview" alt="photo" style="max-width: 100%;">
+                </div>
+                <canvas id="canvas" class="" style="display: none"></canvas>
+                <input type="hidden" name="photo" v-model="photo">
+                <input v-if="!photo" v-on:change="readFile($event, 'photo', 'canvas')" id="photo" ref="filePhoto" type="file" class="form-control">
+            </div>
+
+            <div class="form-group" :data-error="errors.collegeTags" @click="errors.collegeTags=false">
+                <label for="collegeTags">College Tagging <span class="text-danger">*</span></label>
+                {% for college in colleges -%}
+                    <div class="custom-control custom-checkbox">
+                        <input v-model="collegeTags" name="collegeTags[]" value="{{college.id}}" id="{{college.code}}" type="checkbox" class="custom-control-input">
+                        <label class="custom-control-label" for="{{college.code}}">{{college.name}} ({{college.code}})</label>
+                    </div>
+                {%- endfor %}
+            </div>
+                <div class="form-group">
+                <button class="btn btn-primary">Update</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script src="{{app.url}}/js/vue-file-upload.js"></script>
+<script>
+    const collegeTags = {{evaluatee.collegeTags|default([], true)|stringify|safe}}
+    const acsrf = '{{acsrf}}'
+
+    const vApp = new Vue({
+        el: '#vApp',
+        delimiters: ["${", "}"],
+        mixins: [
+            VueFileUpload.mixin, // vue-file-upload.js
+        ],
+        data: {
+            pending: false,
+            prefix: '{{evaluatee.prefix}}',
+            firstName: '{{evaluatee.firstName}}',
+            middleName: '{{evaluatee.middleName}}',
+            lastName: '{{evaluatee.lastName}}',
+            suffix: '{{evaluatee.suffix}}',
+            position: '{{evaluatee.position}}',
+            gender: '{{evaluatee.gender}}',
+            birthDate: '{{evaluatee.birthDate}}',
+            photo: '{{evaluatee.photo}}',
+            collegeId: '{{evaluatee.collegeId}}',
+            collegeTags: collegeTags,
+            
+            errors: {
+                prefix: false,
+                firstName: false,
+                middleName: false,
+                lastName: false,
+                suffix: false,
+                position: false,
+                gender: false,
+                birthDate: false,
+                photo: false,
+                collegeTags: false,
+                
+            },
+        },
+        mounted: function () {
+            const me = this;
+            
+            // Uncomment to autofill test data
+            // me.prefix = ''
+            // me.firstName = ''
+            // me.middleName = ''
+            // me.lastName = ''
+            // me.suffix = ''
+            // me.position = ''
+            // me.gender = ''
+            // me.birthDate = ''
+            // me.photo = ''
+            
+        },
+        computed: {
+
+        },
+        methods: {
+            onSubmit: function(){
+                const me = this;
+                try {
+                    if(!me.firstName){
+                        me.errors.firstName = true
+                        throw new Error('First Name is required.')
+                    }
+                    
+                    if(!me.lastName){
+                        me.errors.lastName = true
+                        throw new Error('Last Name is required.')
+                    }
+                    
+                    if(me.collegeTags.length <= 0){
+                        me.errors.collegeId = true
+                        throw new Error('College Tagging is required.')
+                    }
+                    me.$nextTick(function(){
+                        me.$refs.formMain.submit()
+                    })
+                } catch (err) {
+                    console.error(err)
+                    alert(err.message)
+                }
+            }
+        }
+
+    });
+</script>
+{% endblock %}

@@ -12,8 +12,8 @@
     </div>
     
     <ul class="nav flex-column mb-2">
-        <li class="nav-item {{urlPath|active_class([r/^\/form\/(.)+/, r/^\/form\/(.)+/], 'expanded')}}" id="nav-item-employees">
-            <a class="nav-link {{urlPath|active_class([r/^\/form\/(.)+/])}}" href="/form/all">
+        <li class="nav-item {{urlPath|active_class([r/^\/admin\/forms/, r/^\/admin\/forms\/(.)+/], 'expanded')}}" id="nav-item-employees">
+            <a class="nav-link {{urlPath|active_class([r/^\/admin\/forms/, r/^\/admin\/forms\/(.)+/])}}" href="/admin/forms">
 				<svg style="width:16px;height:16px" viewBox="0 0 24 24">    <path fill="currentColor" d="M15 3H5A2 2 0 0 0 3 5V19A2 2 0 0 0 5 21H19A2 2 0 0 0 21 19V9L15 3M19 19H5V5H14V10H19M17 14H7V12H17M14 17H7V15H14" /></svg>
                 <span>Forms</span>
                 <button class="nav-expander" type="button">
@@ -27,18 +27,123 @@
             </a>
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link {{urlPath|active_class([r/^\/form\/all/])}}" href="/form/all">
+                    <a class="nav-link {{urlPath|active_class([r/^\/admin\/forms$/])}}" href="/admin/forms">
                         All 
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{urlPath|active_class([r/^\/form\/create/])}}" href="/form/create">
+                    <a class="nav-link {{urlPath|active_class([r/^\/admin\/forms\/create$/])}}" href="/admin/forms/create">
                         Add 
                     </a>
                 </li>
                 
             </ul>
 			
+        </li>
+        <li class="nav-item {{urlPath|active_class([r/^\/admin\/evaluatees/, r/^\/admin\/evaluatees\/(.)+/], 'expanded')}}" id="nav-item-employees">
+            <a class="nav-link {{urlPath|active_class([r/^\/admin\/evaluatees/, r/^\/admin\/evaluatees\/(.)+/])}}" href="/admin/evaluatees">
+				<svg style="width:16px;height:16px" viewBox="0 0 24 24">    <path fill="currentColor" d="M15 3H5A2 2 0 0 0 3 5V19A2 2 0 0 0 5 21H19A2 2 0 0 0 21 19V9L15 3M19 19H5V5H14V10H19M17 14H7V12H17M14 17H7V15H14" /></svg>
+                <span>Evaluatees</span>
+                <button class="nav-expander" type="button">
+                    <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
+                    </svg>
+                    <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
+                    </svg>
+                </button>
+            </a>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link {{urlPath|active_class([r/^\/admin\/evaluatees$/])}}" href="/admin/evaluatees">
+                        All 
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{urlPath|active_class([r/^\/admin\/evaluatees\/create/])}}" href="/admin/evaluatees/create">
+                        Create 
+                    </a>
+                </li>
+            </ul>
+        </li> 
+        <li class="nav-item {{urlPath|active_class([r/^\/admin\/colleges/, r/^\/admin\/colleges\/(.)+/], 'expanded')}}" id="nav-item-employees">
+            <a class="nav-link {{urlPath|active_class([r/^\/admin\/colleges/, r/^\/admin\/colleges\/(.)+/])}}" href="/admin/colleges">
+				<svg style="width:16px;height:16px" viewBox="0 0 24 24">    <path fill="currentColor" d="M15 3H5A2 2 0 0 0 3 5V19A2 2 0 0 0 5 21H19A2 2 0 0 0 21 19V9L15 3M19 19H5V5H14V10H19M17 14H7V12H17M14 17H7V15H14" /></svg>
+                <span>Colleges</span>
+                <button class="nav-expander" type="button">
+                    <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
+                    </svg>
+                    <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
+                    </svg>
+                </button>
+            </a>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link {{urlPath|active_class([r/^\/admin\/colleges$/])}}" href="/admin/colleges">
+                        All 
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{urlPath|active_class([r/^\/admin\/colleges\/create/])}}" href="/admin/colleges/create">
+                        Create 
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="nav-item {{urlPath|active_class([r/^\/admin\/programs/, r/^\/admin\/programs\/(.)+/], 'expanded')}}" id="nav-item-employees">
+            <a class="nav-link {{urlPath|active_class([r/^\/admin\/programs/, r/^\/admin\/programs\/(.)+/])}}" href="/admin/programs">
+				<svg style="width:16px;height:16px" viewBox="0 0 24 24">    <path fill="currentColor" d="M15 3H5A2 2 0 0 0 3 5V19A2 2 0 0 0 5 21H19A2 2 0 0 0 21 19V9L15 3M19 19H5V5H14V10H19M17 14H7V12H17M14 17H7V15H14" /></svg>
+                <span>Programs</span>
+                <button class="nav-expander" type="button">
+                    <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
+                    </svg>
+                    <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
+                    </svg>
+                </button>
+            </a>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link {{urlPath|active_class([r/^\/admin\/programs$/])}}" href="/admin/programs">
+                        All 
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{urlPath|active_class([r/^\/admin\/programs\/create/])}}" href="/admin/programs/create">
+                        Create 
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <!--  -->
+        <li class="nav-item {{urlPath|active_class([r/^\/admin\/users/, r/^\/admin\/users\/(.)+/], 'expanded')}}" id="nav-item-employees">
+            <a class="nav-link {{urlPath|active_class([r/^\/admin\/users/, r/^\/admin\/users\/(.)+/])}}" href="/admin/users">
+				<svg style="width:16px;height:16px" viewBox="0 0 24 24">    <path fill="currentColor" d="M15 3H5A2 2 0 0 0 3 5V19A2 2 0 0 0 5 21H19A2 2 0 0 0 21 19V9L15 3M19 19H5V5H14V10H19M17 14H7V12H17M14 17H7V15H14" /></svg>
+                <span>Users</span>
+                <button class="nav-expander" type="button">
+                    <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
+                    </svg>
+                    <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
+                    </svg>
+                </button>
+            </a>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link {{urlPath|active_class([r/^\/admin\/users$/])}}" href="/admin/users">
+                        All 
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{urlPath|active_class([r/^\/admin\/users\/create/])}}" href="/admin/users/create">
+                        Create 
+                    </a>
+                </li>
+            </ul>
         </li>
     </ul>
 </div>

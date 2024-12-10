@@ -1,0 +1,200 @@
+{% extends "document.html" %}
+
+{% block body %}
+<div id="vApp" v-cloak :data-pending="pending" class="col-md-12">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div class="d-flex align-items-start">
+            <h1 class="h4">Update User</h1>
+        </div>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
+                <a href="/admin/users/{{user.id}}/delete" class="btn btn-sm btn-outline-danger">Delete</a>
+            </div>
+        </div>
+    </div>
+
+    <div></div>
+    <div class="tab-content p-3">
+        {% include 'parts/flash.html' %}
+        <!-- Update -->
+        <form ref="formMain" action="/admin/users/{{user.id}}?_method=put" @submit.prevent="onSubmit" class="bold-label" method="post">
+            <input type="hidden" name="acsrf" value="{{acsrf}}">
+            <input type="hidden" name="id" value="{{user.id}}">
+            <div class="form-row">
+                <div class="col-md-4">
+                    <div class="form-group" :data-error="errors.firstName" @click="errors.firstName=false">
+                        <label for="firstName">First Name</label>
+                        <input @blur="genUsername" v-model="firstName" name="firstName" id="firstName" type="text" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group" :data-error="errors.middleName" @click="errors.middleName=false">
+                        <label for="middleName">Middle Name</label>
+                        <input v-model="middleName" name="middleName" id="middleName" type="text" class="form-control">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group" :data-error="errors.lastName" @click="errors.lastName=false">
+                        <label for="lastName">Last Name</label>
+                        <input @blur="genUsername" v-model="lastName" name="lastName" id="lastName" type="text" class="form-control">
+                    </div>
+                </div>
+            </div>
+        
+            <div class="form-group" :data-error="errors.email" @click="errors.email=false">
+                <label for="email">Email</label>
+                <input v-model="email" name="email" id="email" type="text" class="form-control">
+            </div>
+        
+            <div class="form-group" :data-error="errors.username" @click="errors.username=false">
+                <label for="username">Username</label>
+                <input v-model="username" name="username" id="username" type="text" class="form-control">
+            </div>
+        
+            <div class="form-group" :data-error="errors.password" @click="errors.password=false">
+                <label for="password">Password</label>
+                <input v-model="password" name="password" id="password" type="text" class="form-control" placeholder="Type new password here or leave it blank to remain unchanged.">
+            </div>
+        
+            <div class="form-group" :data-error="errors.roles" @click="errors.roles=false">
+                <label for="roles">Roles</label>
+                <div>
+                    {% for role in roles %}
+                    <div class="custom-control custom-checkbox">
+                        <input v-model="roles" name="roles[]" value="{{role.key}}" id="role{{role.id}}" type="checkbox" class="custom-control-input">
+                        <label class="custom-control-label font-weight-normal" for="role{{role.id}}">{{role.name}}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        
+            <div class="form-group" :data-error="errors.active" @click="errors.active=false">
+                <div class="custom-control custom-switch mb-3">
+                    <input v-model="active" name="active" :value="true" type="checkbox" class="custom-control-input" id="active">
+                    <label class="custom-control-label" for="active">Active</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <button class="btn btn-primary">Update</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script>
+    var roles = {{user.roles|default([], true)|stringify|safe}}
+    var acsrf = '{{acsrf}}';
+
+    var vApp = new Vue({
+        el: '#vApp',
+        delimiters: ["${", "}"],
+        mixins: [
+        ],
+        
+        data: {
+            pending: false,
+            firstName: '{{user.firstName}}',
+            middleName: '{{user.middleName}}',
+            lastName: '{{user.lastName}}',
+            email: '{{user.email}}',
+            username: '{{user.username}}',
+            password: '',
+            roles: roles,
+            active: {{user.active}},
+            
+            errors: {
+                firstName: false,
+                middleName: false,
+                lastName: false,
+                email: false,
+                username: false,
+                password: false,
+                salt: false,
+                roles: false,
+                active: false,
+                
+            },
+        },
+        mounted: function () {
+            const me = this;
+            
+            // Uncomment to autofill test data
+            // me.firstName = ''
+            // me.middleName = ''
+            // me.lastName = ''
+            // me.email = ''
+            // me.username = ''
+            // me.passwordHash = ''
+            // me.salt = ''
+            // me.roles = ''
+            // me.permissions = ''
+            // me.active = ''
+            
+        },
+        computed: {
+
+        },
+        methods: {
+            _genUsername: (firstName, lastName) => {
+                let firstNames = firstName.split(' ')
+                firstName = _.toLower(firstNames.shift())
+                if (firstName === 'ma.') {
+                    firstName = _.toLower(firstNames.shift()) // second name
+                }
+                lastName = lastName.replace(/ /g, '') // remove spaces for maam josephine "de asis"
+                lastName = _.toLower(`${lastName}`)
+                firstName = _.toLower(`${firstName}`)
+                return  `${firstName}.${lastName}`
+            },
+            genUsername: function(){
+                const me = this
+
+                if(me.firstName && me.lastName && !me.username){
+                    me.username = me._genUsername(me.firstName, me.lastName)
+                }
+            },
+            onSubmit: function(){
+                const me = this;
+                try {
+                    if(!me.firstName){
+                        me.errors.firstName = true
+                        throw new Error('First Name is required.')
+                    }
+                    
+                    if(!me.lastName){
+                        me.errors.lastName = true
+                        throw new Error('Last Name is required.')
+                    }
+                    
+                    if(!me.email){
+                        me.errors.email = true
+                        throw new Error('Email is required.')
+                    }
+                    
+                    if(!me.username){
+                        me.errors.username = true
+                        throw new Error('Username is required.')
+                    }
+                    
+                    if(!me.roles){
+                        me.errors.roles = true
+                        throw new Error('Roles is required.')
+                    }
+                    
+                    
+                    me.$nextTick(function(){
+                        me.$refs.formMain.submit()
+                    })
+                } catch (err) {
+                    console.error(err)
+                    alert(err.message)
+                }
+            }
+        }
+
+    });
+</script>
+{% endblock %}
